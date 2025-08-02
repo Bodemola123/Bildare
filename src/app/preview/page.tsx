@@ -44,7 +44,7 @@ const TemplateCard = () => (
 
 const Preview = () => {
   return (
-    <div className="flex flex-col gap-10 w-full text-white p-10 overflow-y-auto scrollbar-hide h-full">
+    <div className="flex flex-col gap-10 w-full text-white p-10 overflow-y-auto scrollbar-hide h-full bg-[url('/Sample.svg')] bg-no-repeat bg-cover bg-center">
       
       {/* Header */}
 <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 w-full">
@@ -101,7 +101,7 @@ const Preview = () => {
         </div>
 
         <div className="flex gap-4 flex-wrap md:flex-row sm:flex-col sm:items-center sm:justify-center md:items-start md:justify-start">
-          <Link href="/checkout" className="bg-[#B9F500] text-black hover:bg-[#B9F50099] rounded-2xl px-6 py-3 font-semibold w-full sm:max-w-[339px] md:w-max cursor-pointer">
+          <Link href="/checkout" className="bg-[#B9F500] flex items-center justify-center text-black hover:bg-[#B9F50099] rounded-2xl px-6 py-3 font-semibold w-full sm:max-w-[339px] md:w-max cursor-pointer">
             Purchase $50
           </Link>
           <button className="flex items-center justify-center gap-2 px-6 py-3 rounded-2xl text-[#B9F500] hover:bg-[#B9F50033] font-bold w-full sm:max-w-[339px] md:w-max">
