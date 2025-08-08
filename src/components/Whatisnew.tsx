@@ -22,7 +22,7 @@ const Whatisnew: React.FC<WhatisnewProps> = ({ closeModal }) => {
         {/* Image */}
         <div className="w-full flex justify-center">
           <Image
-            src="/WhatisNew.svg"
+            src="/whatisnew.svg"
             alt="What's New"
             width={530}
             height={334}
