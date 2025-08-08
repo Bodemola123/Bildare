@@ -20,15 +20,14 @@ const Whatisnew: React.FC<WhatisnewProps> = ({ closeModal }) => {
         </div>
 
         {/* Image */}
-        <div className="w-full flex justify-center">
           <Image
-            src="/whatisnew.svg"
+            src="/new.svg"
             alt="What's New"
             width={530}
             height={334}
             className="w-full h-auto max-h-[250px] object-contain"
           />
-        </div>
+
 
         {/* Description */}
         <p className="text-sm text-center leading-relaxed">
