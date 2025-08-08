@@ -13,7 +13,7 @@ const Page = () => {
         <Navbar />
         <div className="w-full h-full relative">
           <Body />
-           <div className="fixed bottom-10 right-10 z-50 flex flex-col items-end space-y-2">
+           <div className="fixed bottom-16 right-10 z-50 flex flex-col items-end space-y-2">
         {isOpen && (
           <div className="p-4 rounded-2xl flex flex-col items-start justify-between bg-[#1C1D19] text-white w-64 shadow-xl">
             <button className="py-1 hover:text-[#B9F500]">Welcome to Bildare</button>

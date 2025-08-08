@@ -24,11 +24,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning={true}>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased  text-white bg-[#1c1d19] md:bg-[url('/Sample.svg')] bg-no-repeat bg-cover bg-center min-h-screen`}
-      >
-        {children}
-      </body>
+<body className={`${geistSans.variable} ${geistMono.variable} antialiased text-white bg-[#1c1d19] min-h-screen relative`}>
+  <div className="fixed inset-0 -z-10 bg-[url('/Sample.svg')] bg-cover bg-no-repeat bg-center" />
+  <div className="relative z-10">
+    {children}
+  </div>
+</body>
+
     </html>
   );
 }

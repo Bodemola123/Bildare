@@ -44,7 +44,7 @@ const TemplateCard = () => (
 
 const Preview = () => {
   return (
-    <div className="flex flex-col gap-10 w-full text-white p-10 overflow-y-auto scrollbar-hide h-full bg-[url('/Sample.svg')] bg-no-repeat bg-cover bg-center">
+    <div className="flex flex-col gap-10 w-full min-h-screen text-white py-10 overflow-y-auto scrollbar-hide h-full md:px-[160px]">
       
       {/* Header */}
 <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 w-full">
@@ -52,7 +52,7 @@ const Preview = () => {
   <h1 className="text-2xl font-bold">Templates</h1>
 
   {/* Search Input */}
-  <div className="flex items-center bg-[#292A25] px-4 py-3 rounded-2xl border border-[#292A251A] w-full max-w-full sm:max-w-[440px]">
+  <div className="flex items-center bg-[#292A25] px-4 py-3 rounded-2xl border border-[#292A251A] w-full max-w-[440px] max-h-[46px]">
     <Search className="text-[#858585]" size={20} />
     <Input
       placeholder="Search categories, templates, UIs, components..."
@@ -92,7 +92,7 @@ const Preview = () => {
       </div>
 
       {/* Template Header */}
-      <section className="flex flex-col gap-6">
+      <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-4">
           <h2 className="text-5xl font-bold text-white">Template Name</h2>
           <p className="max-w-[600px] text-[#B0B0B0]">
@@ -129,10 +129,10 @@ const Preview = () => {
   </div>
 </div>
 
-      </section>
+      </div>
 
       {/* Image Previews */}
-<section className="flex justify-center w-full">
+<div className="flex justify-center w-full">
   <div className="grid grid-cols-1 md:grid-cols-2 md:grid-rows-2 gap-4 w-full">
     {[1, 2, 3, 4].map((i) => (
       <div
@@ -141,11 +141,11 @@ const Preview = () => {
       />
     ))}
   </div>
-</section>
+</div>
 
 
       {/* Description and Info */}
-      <section className="grid grid-cols-1 lg:grid-cols-2 gap-10 w-full">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 w-full">
         {/* About Template */}
         <div className="flex flex-col gap-8">
           <h3 className="text-3xl font-bold">About This Template</h3>
@@ -215,7 +215,7 @@ const Preview = () => {
             </div>
           </div>
         </div>
-      </section>
+      </div>
 
       <Separator className='bg-[#FEF9B514]'/>
 
