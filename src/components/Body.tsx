@@ -141,7 +141,7 @@ const Body: React.FC = () => {
         </div>
 
         <Button variant="ghost" className="px-6 py-3 rounded-2xl text-[#B9F500] font-semibold">
-          Login / Register
+          <Link href='/auth'>Login / Register</Link>
         </Button>
       </div>
 

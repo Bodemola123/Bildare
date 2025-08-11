@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 import { GoX } from "react-icons/go";
 import { IoSparkles } from "react-icons/io5";
@@ -36,10 +37,10 @@ const Whatisnew: React.FC<WhatisnewProps> = ({ closeModal }) => {
         </p>
 
         {/* Button */}
-        <button className="bg-[#B9F500] px-6 py-3 rounded-2xl flex items-center gap-2 hover:opacity-90 transition">
+        <Link href='/auth' className="bg-[#B9F500] px-6 py-3 rounded-2xl flex items-center gap-2 hover:opacity-90 transition cursor-pointer">
           <IoSparkles className="text-black text-lg" />
           <span className="text-black text-sm font-semibold">Sign up</span>
-        </button>
+        </Link>
       </div>
     </div>
   );

@@ -21,9 +21,9 @@ const Page = () => {
         <h1 className="text-2xl font-bold">CHECKOUT</h1>
         <Button
           variant="ghost"
-          className="px-6 py-3 rounded-2xl text-[#B9F500] font-semibold w-full sm:w-fit"
+          className="px-6 py-3 rounded-2xl text-[#B9F500] font-semibold w-full sm:w-fit cursor-pointer"
         >
-          Login / Register
+          <Link href='/auth'>Login / Register</Link>
         </Button>
       </header>
 

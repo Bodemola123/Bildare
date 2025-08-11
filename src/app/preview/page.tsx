@@ -63,9 +63,9 @@ const Preview = () => {
   {/* Login / Register Button */}
   <Button
     variant="ghost"
-    className="px-6 py-3 rounded-2xl text-[#B9F500] font-semibold w-full sm:w-fit "
+    className="px-6 py-3 rounded-2xl text-[#B9F500] font-semibold w-full sm:w-fit cursor-pointer "
   >
-    Login / Register
+    <Link href='/auth'>Login / Register</Link>
   </Button>
 </header>
 
