@@ -25,7 +25,7 @@ type NavItemProps = {
   href?: string;
 };
 
-const NavItem: React.FC<NavItemProps> = ({ icon, label, href = "#" }) => (
+const NavItem: React.FC<NavItemProps> = ({ icon, label, href = "/#" }) => (
   <Link href={href} className="flex items-center gap-2.5 p-4 hover:bg-[#ffffff0a] hover:text-[#B9F500] rounded-xl w-max">
     {icon}
     <p className="text-sm truncate">{label}</p>
