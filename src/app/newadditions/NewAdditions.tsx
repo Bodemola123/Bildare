@@ -1,0 +1,156 @@
+"use client" 
+
+
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { BadgeQuestionMark, ChevronUp, Search } from 'lucide-react'
+import Image from 'next/image'
+import Link from 'next/link'
+import React, { useState } from 'react'
+import { IoSparklesSharp } from 'react-icons/io5'
+
+interface CardProps {
+  title: string
+  subtitle?: string
+  date: string
+  icon?: React.ReactNode
+}
+
+const Card: React.FC<CardProps> = ({ title, subtitle, date, icon }) => (
+  <div className="flex flex-col justify-between bg-[#292a25] py-6 px-5 rounded-2xl h-[387px] md:h-[562px] w-full gap-6 text-white max-w-[659px]">
+    <div className="flex justify-between items-center">
+      <div className="flex items-center gap-2 text-base font-medium">
+        <span className="font-semibold">{title}</span>
+        {subtitle && <p>{subtitle}</p>}
+        {icon}
+      </div>
+      <span className="text-base font-normal">{date}</span>
+    </div>
+    <div className="flex bg-[#1C1D19] w-full max-h-[270px] h-full rounded-2xl" />
+    <div className="flex flex-col items-center text-center gap-2.5">
+      <h1 className="text-base font-semibold">Introducing</h1>
+      <p className="line-clamp-2 text-[#B0B0B0] font-normal text-base">
+        Meet AstroClash, a fully-featured Play-to-Earn NFT Marketplace Kit, including exclusive design files all editable in Figma plus a pack of custom, beautiful 3D illustrations...
+      </p>
+    </div>
+  </div>
+)
+
+const NewAdditions = () => {
+  const [isOpen, setIsOpen] = useState(false)
+
+  return (
+    <div className="flex flex-col gap-20 w-full bg-transparent text-white md:flex-grow md:overflow-y-auto h-full px-5 md:px-20 py-10 scrollbar-hide relative">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <h1 className="text-2xl font-bold">Templates</h1>
+
+        <div className="flex items-center bg-[#292A25] px-4 py-3 rounded-2xl border border-[#292A251A] w-full max-w-[440px]">
+          <Search className="text-[#858585]" size={20} />
+          <Input
+            placeholder="Search categories, templates, UIs, components..."
+            className="ml-3 placeholder:text-[#757575] border-none bg-transparent focus:ring-0"
+          />
+        </div>
+
+        <Button
+          variant="ghost"
+          className="px-6 py-3 rounded-2xl text-[#B9F500] font-semibold"
+        >
+          <Link href="/auth">Login / Register</Link>
+        </Button>
+      </div>
+
+      {/* Hero Section */}
+      <div className="flex flex-col gap-6 items-center text-center">
+        <div className="bg-[#B9F5000D] flex gap-2.5 px-2.5 py-1.5 rounded-2xl text-[#B9F500] text-xs items-center justify-center font-medium">
+          What&apos;s New?
+          <IoSparklesSharp />
+        </div>
+        <div className='flex flex-col gap-2'>
+          <h1 className="text-3xl md:text-4xl font-semibold">Stay Ahead</h1>
+          <p className="text-base font-normal">
+            Introducing New features and New products
+          </p>
+        </div>
+      </div>
+
+      {/* Cards */}
+      <div className="flex flex-col gap-6 items-center">
+        <Card title="New Version" subtitle="V 1.0.6" date="Fri 18 Aug, 2025" />
+        <Card
+          title="New Templates Added"
+          date="Fri 18 Aug, 2025"
+          icon={<Image src="/stars.svg" alt="stars" width={40} height={40} />}
+        />
+        <Card
+          title="New Templates Added"
+          date="Fri 18 Aug, 2025"
+          icon={<Image src="/stars.svg" alt="stars" width={40} height={40} />}
+        />
+        <Card
+          title="New Templates Added"
+          date="Fri 18 Aug, 2025"
+          icon={<Image src="/stars.svg" alt="stars" width={40} height={40} />}
+        />
+      </div>
+
+      {/* Footer */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs font-medium">
+        <div className="flex items-center gap-2">
+          <p>Built by</p>
+          <Image src="/BildareLogo.png" alt="logo" width={59} height={18} />
+        </div>
+
+        <div className="flex flex-wrap gap-4 sm:justify-start md:justify-end">
+          {['Help', 'Email', 'Twitter', 'Discord', 'Terms', 'Privacy'].map(
+            (link) => (
+              <p
+                key={link}
+                className="cursor-pointer hover:text-[#b9f500] hover:underline-offset-4 hover:underline"
+              >
+                {link}
+              </p>
+            )
+          )}
+        </div>
+      </div>
+
+      {/* Floating Menu */}
+      <div className="fixed bottom-16 right-6 z-50 flex flex-col items-end space-y-2">
+        {isOpen && (
+          <div className="p-4 rounded-2xl flex flex-col items-start bg-[#1C1D19] text-white w-64 shadow-xl space-y-1">
+            {[
+              'Welcome to Bildare',
+              'Try a Template',
+              'Help Center',
+              'Our Blog',
+              'Legal Summary',
+              'Submit Feedback',
+              'Community',
+              'Report an Issue',
+            ].map((item, idx) => (
+              <React.Fragment key={item}>
+                {idx === 4 || idx === 6 ? (
+                  <hr className="w-full my-2 border-[#333]" />
+                ) : null}
+                <button className="py-1 hover:text-[#B9F500]">{item}</button>
+              </React.Fragment>
+            ))}
+          </div>
+        )}
+
+        <button
+          onClick={() => setIsOpen((prev) => !prev)}
+          className="flex justify-center items-center bg-[#1C1D19] text-[#B9F500] gap-2.5 px-4 py-2 rounded-2xl shadow-lg"
+        >
+          <p>Get Started</p>
+          <ChevronUp size={14} />
+          <BadgeQuestionMark size={14} />
+        </button>
+      </div>
+    </div>
+  )
+}
+
+export default NewAdditions

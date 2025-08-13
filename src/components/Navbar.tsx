@@ -44,13 +44,20 @@ const Navbar: React.FC = () => {
         {/* Logo & What's New */}
         <div className="flex flex-col gap-9 items-center md:items-start">
           <Image src="/BildareLogo.png" alt="BILDARE logo" width={151} height={46} />
-          <button
+          {/* <button
             onClick={openModal}
             className="flex items-center justify-center sm:justify-start gap-2.5 bg-[#B9F50033] rounded-[16px] p-4 cursor-pointer md:w-fit w-full"
           >
             <Image src="/sparkles.svg" alt="sparkle" width={18} height={18} />
             <span className="font-semibold text-sm text-[#B9F500]">What's new?</span>
-          </button>
+          </button> */}
+          <Link
+            href="/newadditions"
+            className="flex items-center justify-center sm:justify-start gap-2.5 bg-[#B9F50033] rounded-[16px] p-4 cursor-pointer md:w-fit w-full"
+          >
+            <Image src="/sparkles.svg" alt="sparkle" width={18} height={18} />
+            <span className="font-semibold text-sm text-[#B9F500]">What's new?</span>
+          </Link>
         </div>
 
         <div className="grid grid-cols-2 gap-4 md:flex md:flex-col md:gap-2">
