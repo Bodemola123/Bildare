@@ -123,7 +123,7 @@ const NewAdditions = () => {
             <button className="py-1 hover:text-[#B9F500]">Welcome to Bildare</button>
             <button className="py-1 hover:text-[#B9F500]">Try a Template</button>
             <Link href='/helpcenter' className="py-1 hover:text-[#B9F500]">Help Center</Link>
-            <button className="py-1 hover:text-[#B9F500]">Our Blog</button>
+            <Link  href="/blog" className="py-1 hover:text-[#B9F500]">Our Blog</Link>
             <hr className="w-full my-2 border-[#333]" />
             <button className="py-1 hover:text-[#B9F500]">Legal Summary</button>
             <button className="py-1 hover:text-[#B9F500]">Submit Feedback</button>
