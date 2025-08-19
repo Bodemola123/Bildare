@@ -2,6 +2,11 @@ import Navbar from '@/components/Navbar'
 import React from 'react'
 import NewAdditions from './NewAdditions'
 
+export const metadata = {
+  title: "What's New",
+};
+
+
 const page = () => {
   return (
     <div className='md:flex sm:flex md:flex-row sm:flex-col h-screen w-full'>

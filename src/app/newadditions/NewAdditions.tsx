@@ -117,26 +117,19 @@ const NewAdditions = () => {
       </div>
 
       {/* Floating Menu */}
-      <div className="fixed bottom-16 right-6 z-50 flex flex-col items-end space-y-2">
+           <div className="fixed bottom-16 right-10 z-50 flex flex-col items-end space-y-2">
         {isOpen && (
-          <div className="p-4 rounded-2xl flex flex-col items-start bg-[#1C1D19] text-white w-64 shadow-xl space-y-1">
-            {[
-              'Welcome to Bildare',
-              'Try a Template',
-              'Help Center',
-              'Our Blog',
-              'Legal Summary',
-              'Submit Feedback',
-              'Community',
-              'Report an Issue',
-            ].map((item, idx) => (
-              <React.Fragment key={item}>
-                {idx === 4 || idx === 6 ? (
-                  <hr className="w-full my-2 border-[#333]" />
-                ) : null}
-                <button className="py-1 hover:text-[#B9F500]">{item}</button>
-              </React.Fragment>
-            ))}
+          <div className="p-4 rounded-2xl flex flex-col items-start justify-between bg-[#1C1D19] text-white w-64 shadow-xl">
+            <button className="py-1 hover:text-[#B9F500]">Welcome to Bildare</button>
+            <button className="py-1 hover:text-[#B9F500]">Try a Template</button>
+            <Link href='/helpcenter' className="py-1 hover:text-[#B9F500]">Help Center</Link>
+            <button className="py-1 hover:text-[#B9F500]">Our Blog</button>
+            <hr className="w-full my-2 border-[#333]" />
+            <button className="py-1 hover:text-[#B9F500]">Legal Summary</button>
+            <button className="py-1 hover:text-[#B9F500]">Submit Feedback</button>
+            <hr className="w-full my-2 border-[#333]" />
+            <button className="py-1 hover:text-[#B9F500]">Community</button>
+            <button className="py-1 hover:text-[#B9F500]">Report an Issue</button>
           </div>
         )}
 
