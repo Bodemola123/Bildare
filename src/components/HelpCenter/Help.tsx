@@ -15,7 +15,7 @@ const HelpCard = () => (
 
 const Help = () => {
   return (
-    <div className='flex flex-col gap-12 text-white w-full  max-w-[800px] mx-auto'>
+    <div className='flex flex-col gap-12 text-white w-full max-w-[800px]'>
       
       {/* Intro Section */}
       <div className='flex flex-col gap-4 items-start justify-start'>

@@ -22,7 +22,7 @@ const HelpPage = () => {
       </div>  
 
       {/* Main Content */}
-      <div className='flex flex-col md:flex-row justify-start items-start md:gap-16 lg:gap-24 w-full'>
+      <div className='flex flex-col md:flex-row justify-start items-start gap-6 md:gap-8 lg:gap-[125px] w-full'>
 
         {/* Sidebar */}
         <div className='flex flex-col gap-10 w-full md:w-[250px]'>

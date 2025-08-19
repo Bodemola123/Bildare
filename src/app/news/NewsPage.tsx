@@ -24,7 +24,10 @@ const NewsPage = () => {
                 <p className='md:text-base font-medium sm:text-sm'>Wed 6 Aug, 2025</p>
 
             </div>
-            <Image src="/bildarenews.svg" alt='news' width={916} height={334}/>
+            <div className='mx-auto'>
+              <Image src="/bildarenews.svg" alt='news' width={916} height={334}/>
+            </div>
+            
             <h1 className='md:text-3xl font-medium text-2xl'>Meet AstroClash, a fully-featured Play-to-Earn NFT Marketplace Kit, including exclusive design files all editable in Figma plus a pack of custom, beautiful 3D illustrations.</h1>
             <p className='text-[#B0B0B0] md:text-base font-normal leading-8 text-sm' >Meet AstroClash, a fully-featured Play-to-Earn NFT Marketplace Kit, including exclusive design files all editable in Figma plus a pack of custom, beautiful 3D illustrations.
 
@@ -93,7 +96,7 @@ Let us know your thoughts or requests in the comments section below.Meet AstroCl
                 </div>
               </div>
         </div>
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 text-xs font-medium text-white">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 text-xs font-medium text-white max-w-[961px]">
                         
                         {/* Built by */}
                         <div className="flex items-center gap-2">

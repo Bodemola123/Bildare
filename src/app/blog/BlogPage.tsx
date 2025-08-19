@@ -19,7 +19,7 @@ const NewsCard = () => (
 
 const BlogPage = () => {
   return (
-    <div className='flex flex-col gap-20 w-full bg-transparent text-white md:flex-grow md:overflow-y-auto h-full px-5 lg:px-[210px] md:px-[100px] py-10 scrollbar-hide relative'>
+    <div className='flex flex-col gap-20 w-full bg-transparent  text-white md:flex-grow md:overflow-y-auto h-full px-5 lg:px-[210px] md:px-[100px] py-10 scrollbar-hide relative'>
         <div className='flex justify-between items-center'>
             <Link href="/">
             <Image src="/BildareLogo.png" alt='Bildare' width={151} height={56}/>
@@ -38,7 +38,7 @@ const BlogPage = () => {
                   </p>
                 </div>
         </div>
-        <div className='flex flex-col gap-[47px] items-center lg:px-[100px] md:px-[40px] px-4'>
+        <div className='flex flex-col gap-[47px] mx-auto max-w-[1016px] md:px-[40px] px-4'>
             <div className="flex gap-[14px] justify-start items-center self-start flex-wrap">
                 <button className="bg-[#B9F50033] border border-[#B9F500] px-[10px] py-1.5 rounded-2xl flex items-center justify-center text-sm font-medium text-[#B9F500]">
                     All
@@ -81,7 +81,7 @@ const BlogPage = () => {
       </div>
 
       {/* Newsletter Section */}
-      <div className='flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0'>
+      <div className='flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0 w-full max-w-[961px]'>
         <div className="flex flex-col gap-1">
           <p className='font-semibold text-base'>Join our newsletter</p>
           <p className='text-sm text-[#B0B0B0]'>Get all the latest Bildare news delivered to your inbox.</p>
@@ -100,7 +100,7 @@ const BlogPage = () => {
         </div>
       </div>
         </div>
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 text-xs font-medium text-white">
+          <div className="flex flex-col md:flex-row items-start sm:items-center justify-between gap-6 text-xs font-medium text-white w-full">
                 
                 {/* Built by */}
                 <div className="flex items-center gap-2">
@@ -109,7 +109,7 @@ const BlogPage = () => {
                 </div>
         
                 {/* Links */}
-                <div className="flex flex-wrap gap-4 justify-start sm:justify-end items-center">
+                <div className="flex flex-wrap gap-4 justify-start md:justify-end items-center">
                   {['Help', 'Email', 'Twitter', 'Discord', 'Terms', 'Privacy'].map((item, idx) => (
                     <p 
                       key={idx} 
