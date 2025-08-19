@@ -6,14 +6,14 @@ import React from 'react'
 
 const NewsPage = () => {
   return (
-    <div className='flex flex-col gap-20 w-full bg-transparent text-white md:flex-grow md:overflow-y-auto h-full px-5 md:px-[210px] py-10 scrollbar-hide relative'>
+    <div className='flex flex-col gap-20 w-full bg-transparent text-white md:flex-grow md:overflow-y-auto h-full px-5 lg:px-[210px] md:px-[100px] py-10 scrollbar-hide relative'>
         <div className='flex justify-between items-center'>
             <Link href="/">
             <Image src="/BildareLogo.png" alt='Bildare' width={151} height={56}/>
             </Link>
-            <button className='bg-[#B9F500] px-[18px] py-[15px] text-[#000000] font-semibold text-base rounded-2xl max-h-[53px] flex items-center justify-center'>Get Started</button>
+            <button className='bg-[#B9F500] md:px-[18px] md:py-[15px] px-2.5 py-1.5 text-[#000000] font-semibold text-base rounded-2xl flex items-center justify-center'>Get Started</button>
         </div>
-        <div className='flex flex-col md:px-[100px] gap-[56px]'>
+        <div className='flex flex-col lg:px-[100px] md:px-[40px] gap-[56px]'>
             <div className='flex flex-col gap-[29px]'>
                 <div className='flex items-center gap-2 text-[#000000]'>
                     <div className='rounded-[30px] py-2 px-3 bg-[#75F7A3] text-sm font-medium text-center'>Announcement</div>

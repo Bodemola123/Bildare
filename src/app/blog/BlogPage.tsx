@@ -19,12 +19,12 @@ const NewsCard = () => (
 
 const BlogPage = () => {
   return (
-    <div className='flex flex-col gap-20 w-full bg-transparent text-white md:flex-grow md:overflow-y-auto h-full px-5 md:px-[210px] py-10 scrollbar-hide relative'>
+    <div className='flex flex-col gap-20 w-full bg-transparent text-white md:flex-grow md:overflow-y-auto h-full px-5 lg:px-[210px] md:px-[100px] py-10 scrollbar-hide relative'>
         <div className='flex justify-between items-center'>
             <Link href="/">
             <Image src="/BildareLogo.png" alt='Bildare' width={151} height={56}/>
             </Link>
-            <button className='bg-[#B9F500] px-[18px] py-[15px] text-[#000000] font-semibold text-base rounded-2xl max-h-[53px] flex items-center justify-center'>Get Started</button>
+            <button className='bg-[#B9F500] md:px-[18px] md:py-[15px] px-2.5 py-1.5 text-[#000000] font-semibold text-base rounded-2xl max-h-[53px] flex items-center justify-center'>Get Started</button>
         </div>
         <div className="flex flex-col gap-6 items-center text-center justify-center">
                 <div className="bg-[#B9F5000D] flex gap-2.5 px-2.5 py-1.5 rounded-2xl text-[#B9F500] text-xs items-center justify-center font-medium">
@@ -38,7 +38,7 @@ const BlogPage = () => {
                   </p>
                 </div>
         </div>
-        <div className='flex flex-col gap-[47px] items-center md:px-[100px] px-4'>
+        <div className='flex flex-col gap-[47px] items-center lg:px-[100px] md:px-[40px] px-4'>
             <div className="flex gap-[14px] justify-start items-center self-start flex-wrap">
                 <button className="bg-[#B9F50033] border border-[#B9F500] px-[10px] py-1.5 rounded-2xl flex items-center justify-center text-sm font-medium text-[#B9F500]">
                     All
