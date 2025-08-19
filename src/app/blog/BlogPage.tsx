@@ -39,7 +39,7 @@ const BlogPage = () => {
                 </div>
         </div>
         <div className='flex flex-col gap-[47px] items-center md:px-[100px] px-4'>
-            <div className="flex gap-[14px] justify-start items-center self-start">
+            <div className="flex gap-[14px] justify-start items-center self-start flex-wrap">
                 <button className="bg-[#B9F50033] border border-[#B9F500] px-[10px] py-1.5 rounded-2xl flex items-center justify-center text-sm font-medium text-[#B9F500]">
                     All
                 </button>
