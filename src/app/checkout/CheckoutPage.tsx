@@ -11,6 +11,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { format } from 'date-fns';
 import Link from 'next/link';
 import React, { useState } from 'react';
+import Image from 'next/image';
 
 const CheckoutPage = () => {
   const [date, setDate] = useState<Date | undefined>();
@@ -30,9 +31,9 @@ const CheckoutPage = () => {
       <div className="flex flex-wrap items-center gap-6">
         <Link
           href="/preview"
-          className="bg-[#B9F50033] flex gap-2.5 px-5 py-2.5 rounded-2xl text-sm font-semibold text-[#B9F500]"
+          className="bg-[#B9F50033] flex gap-2.5 px-[18px] py-[11px] rounded-2xl text-sm font-semibold text-[#B9F500]"
         >
-          <SquareChevronLeft size={18} />
+          <Image src='/chevron-left.svg' alt='left-arrow' width={18} height={18} />
           Go Back
         </Link>
       </div>
@@ -40,8 +41,8 @@ const CheckoutPage = () => {
       <div className='flex flex-col lg:grid lg:grid-cols-2 gap-10 w-full'>
         <div className='flex flex-col gap-6'>
           <h1 className='font-bold text-4xl md:text-5xl'>Templates Name</h1>
-          <div className='bg-[#D9D9D9] w-full h-64 md:h-[422px] rounded-2xl'></div>
-          <p className="text-sm md:text-base">Dive into the future of technology with organized categories, visually stunning design, and interactive features, making your tech blogging experience both intuitive and elegant.</p>
+          <div className='bg-[#D9D9D9] h-64 md:h-[422px] rounded-2xl'></div>
+          <p className="text-sm md:text-base" style={{ lineHeight: "145%", letterSpacing: "-0.04em" }}>Dive into the future of technology with organized categories, visually stunning design, and interactive features, making your tech blogging experience both intuitive and elegant.</p>
 
           <div className="flex flex-col gap-4">
             <h4 className="text-2xl font-bold">Features</h4>
@@ -59,8 +60,8 @@ const CheckoutPage = () => {
         <div className='bg-[#292A25] w-full gap-[31px] px-[21px] py-[31px] rounded-3xl h-fit'>
           <Tabs defaultValue="card" className='w-full'>
             <TabsList className='grid grid-cols-2 w-fit mb-9 bg-transparent gap-2'>
-              <TabsTrigger value="card" className='py-[15px] px-[18px] rounded-[16px] data-[state=active]:text-[#B9F500] text-[#949494] font-semibold'>Pay with Card</TabsTrigger>
-              <TabsTrigger value="usdc" className='py-[15px] px-[18px] rounded-[16px] data-[state=active]:text-[#B9F500] text-[#949494] font-semibold'>Pay with USDC</TabsTrigger>
+              <TabsTrigger value="card" className='py-[11px] px-[18px] rounded-[16px] data-[state=active]:text-[#B9F500] text-[#949494] font-semibold'>Pay with Card</TabsTrigger>
+              <TabsTrigger value="usdc" className='py-[11px] px-[18px] rounded-[16px] data-[state=active]:text-[#B9F500] text-[#949494] font-semibold'>Pay with USDC</TabsTrigger>
             </TabsList>
 
             <TabsContent value="card">
@@ -132,7 +133,7 @@ const CheckoutPage = () => {
                     <p className='text-[#B9F500]'>$50.00</p>
                   </div>
                 </div>
-                <button className='w-full bg-[#B9F500] py-4 rounded-2xl font-bold text-black'>Pay $50.00</button>
+                <button className='w-full bg-[#B9F500] py-[15px] px-[18px] rounded-2xl font-bold text-black'>Pay $50.00</button>
               </form>
             </TabsContent>
 
@@ -157,7 +158,7 @@ const CheckoutPage = () => {
         </div>
       </div>
 
-      <p className='text-base mt-6'><span className='font-semibold text-[#B9F500]'>Refund Policy:</span> As these are digital products, we do not offer refunds. Once a template is purchased, it cannot be returned. We recommend reviewing the product details and any available previews carefully before making a purchase.</p>
+      <p className='text-base mt-6' style={{ lineHeight: "145%", letterSpacing: "-0.04em" }}><span className='font-semibold text-[#B9F500]'>Refund Policy:</span> As these are digital products, we do not offer refunds. Once a template is purchased, it cannot be returned. We recommend reviewing the product details and any available previews carefully before making a purchase.</p>
     </div>
   );
 };

@@ -29,8 +29,8 @@ const Card: React.FC<CardProps> = ({ title, subtitle, date, icon }) => (
     <div className="flex bg-[#1C1D19] w-full max-h-[270px] h-full rounded-2xl" />
     <div className="flex flex-col items-center text-center gap-2.5">
       <h1 className="text-base font-semibold">Introducing</h1>
-      <p className="line-clamp-2 text-[#B0B0B0] font-normal text-base">
-        Meet AstroClash, a fully-featured Play-to-Earn NFT Marketplace Kit, including exclusive design files all editable in Figma plus a pack of custom, beautiful 3D illustrations...
+      <p className="line-clamp-2 text-[#B0B0B0] font-normal text-base" style={{ lineHeight: "145%", letterSpacing: "-0.04em" }}>
+        Meet AstroClash, a fully-featured Play-to-Earn NFT Marketplace Kit, including exclusive design files all editable in Figma plus a pack of custom, beautiful 3D illustrations. This package includes a responsive and fully customized landing page template with 400+ clean & minimal pre-made screens. We've added a lot of different content to maximize the number of layout options and configurations. Drag, drop, and mix different parts to quickly build your own NFT marketplace in a matter of minutes. Buy it now and get the upcoming coded version in React (Now available), HTML version coming up next! Let us know your thoughts or requests in the comments section below.
       </p>
     </div>
   </div>
@@ -126,10 +126,10 @@ const NewAdditions = () => {
             <Link  href="/blog" className="py-1 hover:text-[#B9F500]">Our Blog</Link>
             <hr className="w-full my-2 border-[#333]" />
             <button className="py-1 hover:text-[#B9F500]">Legal Summary</button>
-            <button className="py-1 hover:text-[#B9F500]">Submit Feedback</button>
+            <Link href='/feedback' className="py-1 hover:text-[#B9F500]">Submit Feedback</Link>
             <hr className="w-full my-2 border-[#333]" />
             <button className="py-1 hover:text-[#B9F500]">Community</button>
-            <button className="py-1 hover:text-[#B9F500]">Report an Issue</button>
+            <Link href='/feedback' className="py-1 hover:text-[#B9F500]">Report an Issue</Link>
           </div>
         )}
 

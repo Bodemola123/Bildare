@@ -26,7 +26,7 @@ type NavItemProps = {
 };
 
 const NavItem: React.FC<NavItemProps> = ({ icon, label, href = "/#" }) => (
-  <Link href={href} className="flex items-center gap-2.5 p-4 hover:bg-[#ffffff0a] hover:text-[#B9F500] rounded-xl w-max">
+  <Link href={href} className="flex items-center gap-2.5 p-4 hover:bg-[#ffffff0a] hover:text-[#B9F500] rounded-xl w-[161px]">
     {icon}
     <p className="text-sm truncate">{label}</p>
   </Link>
@@ -53,7 +53,7 @@ const Navbar: React.FC = () => {
           </button> */}
           <Link
             href="/newadditions"
-            className="flex items-center justify-center sm:justify-start gap-2.5 bg-[#B9F50033] rounded-[16px] p-4 cursor-pointer md:w-fit w-full"
+            className="flex items-center justify-center sm:justify-start gap-2.5 bg-[#B9F50033] rounded-[16px] px-[15px] py-[11px] cursor-pointer md:w-fit w-full"
           >
             <Image src="/sparkles.svg" alt="sparkle" width={18} height={18} />
             <span className="font-semibold text-sm text-[#B9F500]">What's new?</span>

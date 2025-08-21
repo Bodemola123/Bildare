@@ -11,7 +11,7 @@ export const metadata = {
 
 const HelpPage = () => {
   return (
-    <div className='flex flex-col gap-10 md:gap-20 w-full bg-transparent text-white md:flex-grow md:overflow-y-auto h-full px-6 md:px-20 py-10 scrollbar-hide'>
+    <div className='flex flex-col gap-10 md:gap-20 w-full bg-transparent text-white md:flex-grow md:overflow-y-auto h-full px-6 md:px-20 py-[52px] scrollbar-hide'>
 
       {/* Header */}
       <div className="flex flex-row items-center justify-between gap-4">

@@ -79,9 +79,9 @@ const PreviewPage = () => {
       <div className="flex flex-wrap items-center gap-6">
         <Link
           href="/"
-          className="bg-[#B9F50033] flex gap-2.5 px-5 py-2.5 rounded-2xl text-sm font-semibold text-[#B9F500]"
+          className="bg-[#B9F50033] flex gap-2.5 px-[18px] py-[11px] rounded-2xl text-sm font-semibold text-[#B9F500]"
         >
-          <SquareChevronLeft size={18} />
+          <Image src='/chevron-left.svg' alt='left-arrow' width={18} height={18} />
           Go Back
         </Link>
 
@@ -100,22 +100,22 @@ const PreviewPage = () => {
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-4">
           <h2 className="text-5xl font-bold text-white">Template Name</h2>
-          <p className="max-w-[600px] text-[#B0B0B0]">
+          <p className="max-w-[600px] text-[#B0B0B0] line-clamp-1">
             Dive into the future of technology with organized categories, visually stunning design, and interactive features.
           </p>
         </div>
 
         <div className="flex gap-4 flex-wrap md:flex-row sm:flex-col sm:items-center sm:justify-center md:items-start md:justify-start">
-          <Link href="/checkout" className="bg-[#B9F500] flex items-center justify-center text-black hover:bg-[#B9F50099] rounded-2xl px-6 py-3 font-semibold w-full sm:max-w-[339px] md:w-max cursor-pointer">
+          <Link href="/checkout" className="bg-[#B9F500] flex items-center justify-center text-black hover:bg-[#B9F50099] rounded-2xl px-[18px] py-[11px] font-semibold w-full sm:max-w-[339px] md:w-max cursor-pointer">
             Purchase $50
           </Link>
-          <button className="flex items-center justify-center gap-2 px-6 py-3 rounded-2xl text-[#B9F500] hover:bg-[#B9F50033] font-bold w-full sm:max-w-[339px] md:w-max">
+          <button className="flex items-center justify-center gap-2 px-[18px] py-[11px] rounded-2xl text-[#B9F500] hover:bg-[#B9F50033] font-bold w-full sm:max-w-[339px] md:w-max">
             <Eye size={18} />
             Preview Demo
           </button>
         </div>
 
-<div className="flex flex-wrap md:flex-nowrap gap-4 md:gap-6 bg-[#292A25] px-6 py-5 rounded-3xl text-sm font-medium w-full md:w-fit">
+<div className="flex flex-wrap md:flex-nowrap gap-4 md:gap-6 bg-[#292A25] px-[31px] py-[20px] rounded-3xl text-sm font-medium w-full md:w-fit">
   <div className="flex items-center gap-2">
     <Clock3 size={16} />
     23 Jul, 2025
@@ -154,10 +154,20 @@ const PreviewPage = () => {
         {/* About Template */}
         <div className="flex flex-col gap-8">
           <h3 className="text-3xl font-bold">About This Template</h3>
-          <p className="text-[#B0B0B0] text-base">
-            Meet AstroClash, a fully-featured Play-to-Earn NFT Marketplace Kit with exclusive Figma design files and 3D illustrations.
-            <br /><br />
-            It includes 400+ clean, minimal screens and layouts to build your own NFT marketplace quickly. Comes with a responsive landing page in React (available now), and HTML version coming soon.
+          <p className="text-[#B0B0B0] text-base "
+           style={{ lineHeight: "145%", letterSpacing: "-0.04em" }}>
+            Meet AstroClash, a fully-featured Play-to-Earn NFT Marketplace Kit, including exclusive design files all editable in Figma plus a pack of custom, beautiful 3D illustrations.
+              <br /><br />
+
+This package includes a responsive and fully customized landing page template with 400+ clean & minimal pre-made screens. We've added a lot of different content to maximize the number of layout options and configurations. Drag, drop, and mix different parts to quickly build your own NFT marketplace in a matter of minutes.
+  <br /><br />
+
+Buy it now and get the upcoming coded version in React (Now available), HTML version coming up next!
+  <br /><br />
+
+Let us know your thoughts or requests in the comments section below.
+
+          
           </p>
 
           <div className="flex flex-col gap-4">

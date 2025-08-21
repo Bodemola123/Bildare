@@ -162,7 +162,7 @@ const Body: React.FC = () => {
             <div key={idx} className="relative">
               <button
                 onClick={() => setOpenDropdown(openDropdown === idx ? null : idx)}
-                className="bg-[#292A25] px-4 py-2 flex items-center gap-2 rounded-2xl hover:bg-[#33352F] transition w-max"
+                className="bg-[#292A25] px-[10px] py-1.5 flex items-center gap-2 rounded-2xl hover:bg-[#33352F] transition w-max"
               >
                 <span className="text-sm">{dropdown.label}</span>
                 <div className="bg-[#1C1D19] p-1 rounded-full">{dropdown.icon}</div>
@@ -185,6 +185,60 @@ const Body: React.FC = () => {
           ))}
         </div>
       </div>
+
+<div className="flex flex-col md:flex-row gap-4 justify-center items-stretch w-full">
+  {/* What's New Card */}
+  <div
+    className="flex flex-col sm:flex-row items-center justify-between gap-[17px] bg-[#F8FEE6] bg-no-repeat bg-right w-full rounded-2xl p-6 sm:p-9"
+    style={{ backgroundImage: "url('/Vector1.svg')" }}
+  >
+    {/* Text + Button */}
+    <div className="flex flex-col gap-4 text-center sm:text-left">
+      <div className="flex flex-col gap-[5px]">
+        <h1
+          className="text-[#719500] text-2xl sm:text-3xl md:text-[40px] font-semibold"
+          style={{ lineHeight: "120%", letterSpacing: "-0.08em" }}
+        >
+          What&apos;s New on BILDARE?
+        </h1>
+        <p
+          className="text-sm sm:text-base font-normal text-[#000000]"
+          style={{ lineHeight: "145%", letterSpacing: "-0.04em" }}
+        >
+          Stay ahead of your timeline, Just Build it!
+        </p>
+      </div>
+
+      <Link
+        href="/newadditions"
+        className="flex flex-row bg-[#B9F500] px-[18px] py-[11px] gap-2.5 rounded-2xl justify-center sm:justify-start items-center text-[#000000] text-sm font-semibold w-fit self-center sm:self-start"
+        style={{ lineHeight: "145%", letterSpacing: "-0.04em" }}
+      >
+        <Image src="/bstars.svg" alt="stars" width={18} height={18} />
+        See What&apos;s New
+      </Link>
+    </div>
+
+    {/* Image */}
+    <Image
+      src="/Capa.svg"
+      alt="Cap"
+      width={183}
+      height={137}
+      className="w-[120px] sm:w-[150px] md:w-[183px] h-auto mt-4 sm:mt-0"
+    />
+  </div>
+
+  {/* Banner2 */}
+  <Image
+    src="/Banner2.svg"
+    alt="banner"
+    width={325}
+    height={207}
+    className="w-full md:w-1/3 h-auto rounded-2xl"
+  />
+</div>
+
 
       {/* Featured Templates */}
       <div className="flex flex-col gap-6 mt-1">
@@ -230,10 +284,10 @@ const Body: React.FC = () => {
             <Link  href="/blog" className="py-1 hover:text-[#B9F500]">Our Blog</Link>
             <hr className="w-full my-2 border-[#333]" />
             <button className="py-1 hover:text-[#B9F500]">Legal Summary</button>
-            <button className="py-1 hover:text-[#B9F500]">Submit Feedback</button>
+            <Link href='/feedback' className="py-1 hover:text-[#B9F500]">Submit Feedback</Link>
             <hr className="w-full my-2 border-[#333]" />
             <button className="py-1 hover:text-[#B9F500]">Community</button>
-            <button className="py-1 hover:text-[#B9F500]">Report an Issue</button>
+            <Link href='/feedback' className="py-1 hover:text-[#B9F500]">Report an Issue</Link>
           </div>
         )}
 

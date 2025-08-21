@@ -15,18 +15,13 @@ const HelpCard = () => (
 
 const Help = () => {
   return (
-    <div className='flex flex-col gap-12 text-white w-full max-w-[800px]'>
+    <div className='flex flex-col gap-12 text-white w-full max-w-[781px]'>
       
       {/* Intro Section */}
       <div className='flex flex-col gap-4 items-start justify-start'>
         <h1 className='font-bold text-3xl sm:text-4xl md:text-5xl'>Welcome to Bildare</h1>
-        <p className='text-sm sm:text-base text-[#CCCCCC]'>
-          Bildare is built to efficiently play interactive graphics in the editor and at runtime
-          in applications and games. However, poorly optimized animations can consume significant
-          resources and cause poor performance, particularly on low-end devices. In the following
-          sections, we will outline important considerations and tips for maintaining optimal
-          performance and minimal resource utilisation both during design/animate time in the Rive
-          editor, as well as during runtime in applications.
+        <p className='text-sm md:text-base text-[#CCCCCC]' style={{ lineHeight: "145%", letterSpacing: "-0.04em" }}>
+Welcome to Bildare – where UI templates actually work. We create new-age, composable design systems that go beyond pretty dashboards. Every template is developer-tested, framework-ready, and built for real applications, not just demos.
         </p>
       </div>
 
@@ -53,7 +48,7 @@ const Help = () => {
         <div className='flex flex-col gap-2 text-black text-center md:text-left md:items-start items-center'>
           <h1 className='text-2xl sm:text-3xl md:text-4xl font-semibold'>Start Building on the GO!</h1>
           <p className='text-base font-normal'>Need some help?</p>
-          <button className='bg-[#1C1D19] rounded-2xl px-6 py-3 text-[#B9F500] font-semibold text-base mt-2 w-fit'>
+          <button className='bg-[#1C1D19] rounded-2xl px-[18px] py-[11px] text-[#B9F500] font-semibold text-base mt-2 w-fit'>
             Get Started
           </button>
         </div>
@@ -68,19 +63,19 @@ const Help = () => {
 
       {/* Newsletter Section */}
       <div className='flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0'>
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1 max-w-[269px]">
           <p className='font-semibold text-base'>Join our newsletter</p>
-          <p className='text-sm text-[#B0B0B0]'>Get all the latest Bildare news delivered to your inbox.</p>
+          <p className='text-sm text-[#B0B0B0]'>Get all the latest Bildare news <br></br>delivered to your inbox.</p>
         </div>
         <div className='flex flex-col md:flex-row gap-4 items-start sm:items-center w-full sm:w-auto'>
-          <div className="relative w-full sm:w-[300px]">
+          <div className="relative w-full sm:w-[344px]">
             <Input
-              placeholder="you@example.com"
-              className="pl-10 h-14 w-full bg-[#292A25] placeholder:text-[#757575] text-white rounded-2xl"
+              placeholder="@example.com"
+              className="pl-12 h-14 w-full bg-[#292A25] placeholder:text-[#757575] text-white rounded-2xl"
             />
             <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-[#757575]" />
           </div>
-          <button className='bg-[#B9F500] px-6 py-3 rounded-2xl text-black font-semibold text-base w-full sm:w-auto'>
+          <button className='bg-[#B9F500] px-[18px] py-[11px] rounded-2xl text-black font-semibold text-base w-full sm:w-auto'>
             Subscribe
           </button>
         </div>
