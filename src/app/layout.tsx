@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "@/components/ui/sonner";
+import { AuthProvider } from "@/context/AuthContext";
+import LayoutWrapper from "./LayoutWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -85,8 +88,17 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased text-white bg-[#1c1d19] min-h-screen relative`}
       >
+        {/* Background */}
         <div className="fixed inset-0 -z-10 bg-[url('/Sample.svg')] bg-cover bg-no-repeat bg-center" />
-        <div className="relative z-10">{children}</div>
+        
+        <div className="relative z-10">
+          {/* Auth provider wraps everything */}
+          <AuthProvider>
+            {/* LayoutWrapper handles session fetching and loading screen */}
+              {children}
+          </AuthProvider>
+        </div>
+        <Toaster />
       </body>
     </html>
   );

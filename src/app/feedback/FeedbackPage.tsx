@@ -12,7 +12,7 @@ const FeedbackPage = () => {
 <div className="flex flex-col gap-20 w-full bg-transparent text-white md:flex-grow overflow-y-auto h-full px-5 sm:px-10 md:px-[100px] lg:px-[210px] py-[52px] scrollbar-hide relative">
 
   {/* Header */}
-  <div className="flex justify-between items-center w-full">
+  <div className="flex justify-between items-center w-full px-[21px] py-[12px]">
     <Link href="/">
       <Image src="/BildareLogo.png" alt="Bildare" width={151} height={56} />
     </Link>
@@ -56,7 +56,7 @@ const FeedbackPage = () => {
         {/* Name */}
         <div className="grid w-full items-center gap-2">
           <Label htmlFor="name">Name</Label>
-          <div className="relative h-[56px] sm:h-[64px]">
+          <div className="relative h-[56px] md:h-[64px]">
             <Input placeholder="John Doe" className="pl-10 h-full placeholder:text-[#757575] text-white w-full bg-[#1C1D19]" />
             <UserRound className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
           </div>
@@ -65,7 +65,7 @@ const FeedbackPage = () => {
         {/* Email */}
         <div className="grid w-full items-center gap-2">
           <Label>Email</Label>
-          <div className="relative h-[56px] sm:h-[64px]">
+          <div className="relative h-[56px] md:h-[64px]">
             <Input placeholder="you@example.com" className="pl-10 h-full placeholder:text-[#757575] text-white w-full bg-[#1C1D19]" />
             <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
           </div>
@@ -74,7 +74,7 @@ const FeedbackPage = () => {
         {/* Subject */}
         <div className="grid w-full items-center gap-2">
           <Label>Subject</Label>
-          <div className="relative h-[56px] sm:h-[64px]">
+          <div className="relative h-[56px] md:h-[64px]">
             <Input placeholder="Subject" className="pl-10 h-full placeholder:text-[#757575] text-white w-full bg-[#1C1D19]" />
             <NotebookPen className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
           </div>

@@ -3,6 +3,9 @@ import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
+import { useAuth } from '@/context/AuthContext';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 export const metadata = {
   title: "Help Center",
@@ -10,15 +13,47 @@ export const metadata = {
 
 
 const HelpPage = () => {
+
+      const { name, refreshToken, clearAuth } = useAuth(); // ✅ get user data
+  
+    // derive initials
+    const getInitials = (fullName: string | null) => {
+      if (!fullName) return "";
+      const parts = fullName.trim().split(" ");
+      if (parts.length === 1) return parts[0][0].toUpperCase();
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    };
   return (
     <div className='flex flex-col gap-10 md:gap-20 w-full bg-transparent text-white md:flex-grow md:overflow-y-auto h-full px-6 md:px-20 py-[52px] scrollbar-hide'>
 
       {/* Header */}
       <div className="flex flex-row items-center justify-between gap-4">
         <h1 className="text-2xl sm:text-3xl font-bold">Help Center</h1>
-        <Button variant="ghost" className="px-5 py-2 sm:px-6 sm:py-3 rounded-2xl text-[#B9F500] font-semibold">
-          <Link href='/auth'>Login / Register</Link>
-        </Button>
+        {/* ✅ Auth conditional */}
+        {!refreshToken ? (
+          <Button
+            variant="ghost"
+            className="px-6 py-3 rounded-2xl text-[#B9F500] font-semibold"
+          >
+            <Link href="/auth">Login / Register</Link>
+          </Button>
+        ) : (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Avatar className="cursor-pointer">
+                <AvatarFallback>{getInitials(name)}</AvatarFallback>
+              </Avatar>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="bg-[#292A25] text-white">
+              <DropdownMenuItem
+                onClick={clearAuth}
+                className="hover:bg-[#33352F] cursor-pointer"
+              >
+                Log Out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
       </div>  
 
       {/* Main Content */}

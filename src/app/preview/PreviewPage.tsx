@@ -14,13 +14,12 @@ import {
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Separator } from '@radix-ui/react-separator'
 import Link from 'next/link'
-
-export const metadata = {
-  title: "Preview",
-};
+import { useAuth } from '@/context/AuthContext';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 
 const TemplateCard = () => (
@@ -48,6 +47,23 @@ const TemplateCard = () => (
 );
 
 const PreviewPage = () => {
+  const { name, email, fetchSession, clearAuth } = useAuth();
+  const [loading, setLoading] = useState(false);
+
+  // fetch session on mount to ensure user stays logged in
+  useEffect(() => {
+    fetchSession().catch(() => {});
+  }, [fetchSession]);
+
+  // derive initials
+  const getInitials = (fullName: string | null) => {
+    if (!fullName) return "";
+    const parts = fullName.trim().split(" ");
+    if (parts.length === 1) return parts[0][0].toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  };
+
+
   return (
     <div className="flex flex-col gap-10 w-full min-h-screen text-white px-6 py-10 overflow-y-auto scrollbar-hide h-full md:px-[160px]">
       
@@ -65,13 +81,31 @@ const PreviewPage = () => {
     />
   </div>
 
-  {/* Login / Register Button */}
-  <Button
-    variant="ghost"
-    className="px-6 py-3 rounded-2xl text-[#B9F500] font-semibold w-full sm:w-fit cursor-pointer "
-  >
-    <Link href='/auth'>Login / Register</Link>
-  </Button>
+        {/* ✅ Auth conditional */}
+        {!name ? (
+          <Button
+            variant="ghost"
+            className="px-6 py-3 rounded-2xl text-[#B9F500] font-semibold"
+          >
+            <Link href="/auth">Login / Register</Link>
+          </Button>
+        ) : (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Avatar className="cursor-pointer !w-10 !h-10">
+                <AvatarFallback>{getInitials(name)}</AvatarFallback>
+              </Avatar>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="bg-[#292A25] text-white">
+              <DropdownMenuItem
+                onClick={clearAuth}
+                className="hover:bg-[#33352F] cursor-pointer"
+              >
+                Log Out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
 </header>
 
 

@@ -7,6 +7,19 @@ import { Button } from "./ui/button";
 import Image from "next/image";
 import Link from "next/link";
 import { RiLayoutGridFill } from "react-icons/ri";
+import {
+  Avatar,
+  AvatarFallback,
+} from "@/components/ui/avatar"; // ✅ shadcn/ui avatar
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"; // ✅ dropdown
+import { useAuth } from "@/context/AuthContext";
+
+
 
 const categories = [
   "Blockchain",
@@ -80,6 +93,23 @@ const Body: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
     const [isOpen, setIsOpen] = useState(false);
 
+    
+  const { name, email, fetchSession, clearAuth } = useAuth();
+  const [loading, setLoading] = useState(false);
+
+  // fetch session on mount to ensure user stays logged in
+  useEffect(() => {
+    fetchSession().catch(() => {});
+  }, [fetchSession]);
+
+  // derive initials
+  const getInitials = (fullName: string | null) => {
+    if (!fullName) return "";
+    const parts = fullName.trim().split(" ");
+    if (parts.length === 1) return parts[0][0].toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  };
+
   const dropdowns = [
     {
       label: "Tools Used",
@@ -142,9 +172,31 @@ const Body: React.FC = () => {
           />
         </div>
 
-        <Button variant="ghost" className="px-6 py-3 rounded-2xl text-[#B9F500] font-semibold">
-          <Link href='/auth'>Login / Register</Link>
-        </Button>
+        {/* ✅ Auth conditional */}
+        {!name ? (
+          <Button
+            variant="ghost"
+            className="px-6 py-3 rounded-2xl text-[#B9F500] font-semibold"
+          >
+            <Link href="/auth">Login / Register</Link>
+          </Button>
+        ) : (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Avatar className="cursor-pointer">
+                <AvatarFallback>{getInitials(name)}</AvatarFallback>
+              </Avatar>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="bg-[#292A25] text-white">
+              <DropdownMenuItem
+                onClick={clearAuth}
+                className="hover:bg-[#33352F] cursor-pointer"
+              >
+                Log Out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
       </div>
 
       {/* Filters & View Toggles */}
@@ -186,10 +238,10 @@ const Body: React.FC = () => {
         </div>
       </div>
 
-<div className="flex flex-col md:flex-row gap-4 justify-center items-stretch w-full">
+<div className="flex flex-col md:flex-row gap-4 justify-center items-center w-full">
   {/* What's New Card */}
   <div
-    className="flex flex-col sm:flex-row items-center justify-between gap-[17px] bg-[#F8FEE6] bg-no-repeat bg-right w-full rounded-2xl p-6 sm:p-9"
+    className="flex flex-col md:flex-row items-center justify-between gap-[17px] bg-[#F8FEE6] bg-no-repeat bg-right w-full rounded-2xl p-6 sm:p-9"
     style={{ backgroundImage: "url('/Vector1.svg')" }}
   >
     {/* Text + Button */}
@@ -235,7 +287,7 @@ const Body: React.FC = () => {
     alt="banner"
     width={325}
     height={207}
-    className="w-full md:w-1/3 h-auto rounded-2xl"
+    className="w-full md:w-1/3 sm:h-auto lg:h-auto md:h-[207px]  rounded-2xl"
   />
 </div>
 

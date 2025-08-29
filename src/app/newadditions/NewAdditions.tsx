@@ -8,6 +8,9 @@ import Image from 'next/image'
 import Link from 'next/link'
 import React, { useState } from 'react'
 import { IoSparklesSharp } from 'react-icons/io5'
+import { useAuth } from '@/context/AuthContext';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 interface CardProps {
   title: string
@@ -17,6 +20,7 @@ interface CardProps {
 }
 
 const Card: React.FC<CardProps> = ({ title, subtitle, date, icon }) => (
+  
   <div className="flex flex-col justify-between bg-[#292a25] py-6 px-5 rounded-2xl h-[387px] md:h-[562px] w-full gap-6 text-white max-w-[659px]">
     <div className="flex justify-between items-center">
       <div className="flex items-center gap-2 text-base font-medium">
@@ -38,6 +42,15 @@ const Card: React.FC<CardProps> = ({ title, subtitle, date, icon }) => (
 
 const NewAdditions = () => {
   const [isOpen, setIsOpen] = useState(false)
+     const { name, clearAuth } = useAuth(); // ✅ get user data
+  
+    // derive initials
+    const getInitials = (fullName: string | null) => {
+      if (!fullName) return "";
+      const parts = fullName.trim().split(" ");
+      if (parts.length === 1) return parts[0][0].toUpperCase();
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    };
 
   return (
     <div className="flex flex-col gap-20 w-full bg-transparent text-white md:flex-grow md:overflow-y-auto h-full px-5 md:px-20 py-10 scrollbar-hide relative">
@@ -53,12 +66,21 @@ const NewAdditions = () => {
           />
         </div>
 
-        <Button
-          variant="ghost"
-          className="px-6 py-3 rounded-2xl text-[#B9F500] font-semibold"
-        >
-          <Link href="/auth">Login / Register</Link>
-        </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Avatar className="cursor-pointer !w-10 !h-10">
+                <AvatarFallback>{getInitials(name)}</AvatarFallback>
+              </Avatar>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="bg-[#292A25] text-white">
+              <DropdownMenuItem
+                onClick={clearAuth}
+                className="hover:bg-[#33352F] cursor-pointer"
+              >
+                Log Out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
       </div>
 
       {/* Hero Section */}
