@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input'
 import { BadgeQuestionMark, ChevronUp, Search } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { IoSparklesSharp } from 'react-icons/io5'
 import { useAuth } from '@/context/AuthContext';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -42,8 +42,11 @@ const Card: React.FC<CardProps> = ({ title, subtitle, date, icon }) => (
 
 const NewAdditions = () => {
   const [isOpen, setIsOpen] = useState(false)
-     const { name, clearAuth } = useAuth(); // ✅ get user data
-  
+     const { name,fetchSession, clearAuth } = useAuth(); // ✅ get user data
+           // fetch session on mount to ensure user stays logged in
+           useEffect(() => {
+             fetchSession().catch(() => {});
+           }, [fetchSession]);
     // derive initials
     const getInitials = (fullName: string | null) => {
       if (!fullName) return "";

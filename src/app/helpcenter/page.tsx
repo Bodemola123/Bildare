@@ -2,7 +2,7 @@ import Help from '@/components/HelpCenter/Help';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import Link from 'next/link';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -14,7 +14,11 @@ export const metadata = {
 
 const HelpPage = () => {
 
-      const { name, refreshToken, clearAuth } = useAuth(); // ✅ get user data
+      const { name, fetchSession, clearAuth } = useAuth(); // ✅ get user data
+        // fetch session on mount to ensure user stays logged in
+        useEffect(() => {
+          fetchSession().catch(() => {});
+        }, [fetchSession]);
   
     // derive initials
     const getInitials = (fullName: string | null) => {
@@ -30,7 +34,7 @@ const HelpPage = () => {
       <div className="flex flex-row items-center justify-between gap-4">
         <h1 className="text-2xl sm:text-3xl font-bold">Help Center</h1>
         {/* ✅ Auth conditional */}
-        {!refreshToken ? (
+        {!name ? (
           <Button
             variant="ghost"
             className="px-6 py-3 rounded-2xl text-[#B9F500] font-semibold"
