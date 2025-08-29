@@ -7,8 +7,9 @@ interface AuthContextType {
   role: string | null;
   email: string | null;
   otp: string | null;
-  fetchSession: () => Promise<void>; // ✅ Add this
-  clearAuth: () => void;
+  isLoading: boolean;
+  fetchSession: () => Promise<void>;
+  clearAuth: (redirect?: boolean) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -18,13 +19,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [role, setRole] = useState<string | null>(null);
   const [email, setEmail] = useState<string | null>(null);
   const [otp, setOtpState] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   // ✅ Fetch session from server
   const fetchSession = async () => {
+    setIsLoading(true);
     try {
       const res = await fetch("https://bildare-backend.onrender.com/me", {
         method: "GET",
-        credentials: "include", // important to send cookies
+        credentials: "include",
       });
 
       if (res.ok) {
@@ -32,40 +35,41 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setName(data.name ?? null);
         setRole(data.role ?? null);
         setEmail(data.email ?? null);
-        console.log("Session fetched:", data);
+        console.log("✅ Session fetched:", data);
       } else {
         console.warn("Not authenticated");
-        clearAuth();
+        clearAuth(false); // just clear state, don't redirect
       }
     } catch (err) {
-      console.error("Failed to fetch session:", err);
-      clearAuth();
+      console.error("❌ Failed to fetch session:", err);
+      clearAuth(false);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-const clearAuth = async () => {
-  try {
-    await fetch("https://bildare-backend.onrender.com/logout", {
-      method: "POST",
-      credentials: "include", // important to send cookies
-    });
-  } catch (err) {
-    console.error("❌ Logout request failed:", err);
-  } finally {
-    // Clear local client state
-    setName(null);
-    setRole(null);
-    setEmail(null);
-    setOtpState(null);
-    // redirect to login page
-    window.location.href = "/auth";
-  }
-};
-
+  const clearAuth = async (redirect: boolean = true) => {
+    try {
+      await fetch("https://bildare-backend.onrender.com/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch (err) {
+      console.error("❌ Logout request failed:", err);
+    } finally {
+      setName(null);
+      setRole(null);
+      setEmail(null);
+      setOtpState(null);
+      if (redirect) {
+        window.location.href = "/auth";
+      }
+    }
+  };
 
   return (
     <AuthContext.Provider
-      value={{ name, role, email, otp, fetchSession, clearAuth }}
+      value={{ name, role, email, otp, isLoading, fetchSession, clearAuth }}
     >
       {children}
     </AuthContext.Provider>
