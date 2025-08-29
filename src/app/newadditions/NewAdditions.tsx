@@ -77,7 +77,7 @@ const NewAdditions = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="bg-[#292A25] text-white">
               <DropdownMenuItem
-                onClick={clearAuth}
+                onClick={() => clearAuth()}
                 className="hover:bg-[#33352F] cursor-pointer"
               >
                 Log Out
