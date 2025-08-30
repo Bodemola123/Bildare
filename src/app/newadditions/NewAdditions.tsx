@@ -42,11 +42,8 @@ const Card: React.FC<CardProps> = ({ title, subtitle, date, icon }) => (
 
 const NewAdditions = () => {
   const [isOpen, setIsOpen] = useState(false)
-     const { name,fetchSession, clearAuth } = useAuth(); // ✅ get user data
-           // fetch session on mount to ensure user stays logged in
-           useEffect(() => {
-             fetchSession().catch(() => {});
-           }, [fetchSession]);
+     const { name, clearAuth } = useAuth(); // ✅ get user data
+
     // derive initials
     const getInitials = (fullName: string | null) => {
       if (!fullName) return "";
@@ -56,7 +53,7 @@ const NewAdditions = () => {
     };
 
   return (
-    <div className="flex flex-col gap-20 w-full bg-transparent text-white md:flex-grow md:overflow-y-auto h-full px-5 md:px-20 py-10 scrollbar-hide relative">
+    <div className="flex flex-col gap-20 w-full bg-transparent text-white md:flex-grow md:overflow-y-auto h-full px-5 md:px-20 py-10 scrollbar-hide relative overflow-x-hidden">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <h1 className="text-2xl font-bold">Templates</h1>
@@ -75,14 +72,18 @@ const NewAdditions = () => {
                 <AvatarFallback>{getInitials(name)}</AvatarFallback>
               </Avatar>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-[#292A25] text-white">
-              <DropdownMenuItem
-                onClick={() => clearAuth()}
-                className="hover:bg-[#33352F] cursor-pointer"
-              >
-                Log Out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
+                <DropdownMenuContent
+                  align="end"
+                  className="bg-[#292A25] text-white max-w-[90vw] overflow-hidden"
+                >
+                  <DropdownMenuItem
+                    onClick={() => clearAuth()}
+                    className="hover:bg-[#33352F] cursor-pointer"
+                  >
+                    Log Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+
           </DropdownMenu>
       </div>
 

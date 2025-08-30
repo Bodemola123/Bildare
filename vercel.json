@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://bildare-backend.onrender.com/$1"
+    }
+  ]
+}

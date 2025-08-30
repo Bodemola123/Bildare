@@ -94,13 +94,8 @@ const Body: React.FC = () => {
     const [isOpen, setIsOpen] = useState(false);
 
     
-  const { name, email, fetchSession, clearAuth } = useAuth();
+  const { name, email, clearAuth } = useAuth();
   const [loading, setLoading] = useState(false);
-
-  // fetch session on mount to ensure user stays logged in
-  useEffect(() => {
-    fetchSession().catch(() => {});
-  }, [fetchSession]);
 
   // derive initials
   const getInitials = (fullName: string | null) => {
@@ -187,14 +182,17 @@ const Body: React.FC = () => {
                 <AvatarFallback>{getInitials(name)}</AvatarFallback>
               </Avatar>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-[#292A25] text-white">
-              <DropdownMenuItem
-                onClick={() => clearAuth()}
-                className="hover:bg-[#33352F] cursor-pointer"
-              >
-                Log Out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
+                <DropdownMenuContent
+                  align="end"
+                  className="bg-[#292A25] text-white max-w-[90vw] overflow-hidden"
+                >
+                  <DropdownMenuItem
+                    onClick={() => clearAuth()}
+                    className="hover:bg-[#33352F] cursor-pointer"
+                  >
+                    Log Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
           </DropdownMenu>
         )}
       </div>

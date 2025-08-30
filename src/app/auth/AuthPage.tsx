@@ -24,14 +24,17 @@ const AuthPage: React.FC<AuthPageProps> = ({ setCurrentSlide }) => {
 const { fetchSession } = useAuth();
 
 const handleSubmit = async () => {
-  if (!email || !password) return toast("Please fill in all fields");
+  if (!email || !password) {
+    toast.error("Please fill in both email and password.");
+    return;
+  }
 
   setLoading(true);
 
   try {
     const endpoint = isSignUp
-      ? "https://bildare-backend.onrender.com/signup"
-      : "https://bildare-backend.onrender.com/login";
+      ? "/api/signup"
+      : "/api/login";
 
     const res = await fetch(endpoint, {
       method: "POST",
@@ -42,33 +45,34 @@ const handleSubmit = async () => {
 
     const data = await res.json().catch(() => ({}));
 
-    console.log("🔍 Response status:", res.status);
-    console.log("🔍 Response data:", data);
+    if (res.ok) {
+      if (!isSignUp) {
+        // ✅ Login successful
+        await fetchSession();
+        setCurrentSlide("signinSuccess");
 
-if (res.ok) {
-  if (!isSignUp) {
-    // Login: fetch session from server
-    await fetchSession(); // ✅ updates context automatically
-    setCurrentSlide("signinSuccess");
-  } else {
-    // Signup: save email/password temporarily if needed for verification
-    localStorage.setItem("signupEmail", email);
-    localStorage.setItem("signupPassword", password);
-    setCurrentSlide("emailVerify");
-  }
-} else if (res.status === 400) {
-  toast("User already registered");
-} else {
-  toast(data.message || `Error ${res.status}: Something went wrong`);
-}
+        toast.success(`Welcome back, ${data.name || "user"}!`);
+      } else {
+        // ✅ Signup successful
+        localStorage.setItem("signupEmail", email);
+        localStorage.setItem("signupPassword", password);
+        setCurrentSlide("emailVerify");
 
+        toast.success("Signup successful! We sent you an OTP. Please verify your email.");
+      }
+    } else if (res.status === 400) {
+      toast.error(data.error || "Bad request. Try again.");
+    } else {
+      toast.error(data.error || data.message || `Error ${res.status}`);
+    }
   } catch (err) {
     console.error("❌ Fetch error:", err);
-    toast("Something went wrong. Try again.");
+    toast.error("Network error. Please try again.");
   } finally {
     setLoading(false);
   }
 };
+
 
 
   return (

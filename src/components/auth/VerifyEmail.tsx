@@ -50,7 +50,8 @@ const handleContinue = async () => {
   setLoading(true);
 
   try {
-    const res = await fetch("https://bildare-backend.onrender.com/verify-reset-token", {
+    const endpoint = '/api/verify-reset-token'
+    const res = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: email, token: otp }), // send both email and OTP
@@ -78,7 +79,8 @@ const handleResend = async () => {
 
   setResendLoading(true);
   try {
-    const res = await fetch("https://bildare-backend.onrender.com/request-password-reset", {
+    const endpoint = '/api/request-password-reset'
+    const res = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: email }),

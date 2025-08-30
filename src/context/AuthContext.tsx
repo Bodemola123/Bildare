@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
 interface AuthContextType {
   name: string | null;
@@ -20,9 +20,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [email, setEmail] = useState<string | null>(null);
   const [otp, setOtpState] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasFetched, setHasFetched] = useState(false); // ✅ track if already fetched
 
   // ✅ Fetch session from server
   const fetchSession = async () => {
+    // Prevent duplicate calls
+    if (hasFetched) return;
+
     setIsLoading(true);
     try {
       const res = await fetch("https://bildare-backend.onrender.com/me", {
@@ -35,7 +39,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setName(data.name ?? null);
         setRole(data.role ?? null);
         setEmail(data.email ?? null);
-        console.log("✅ Session fetched:", data);
       } else {
         console.warn("Not authenticated");
         clearAuth(false); // just clear state, don't redirect
@@ -45,6 +48,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       clearAuth(false);
     } finally {
       setIsLoading(false);
+      setHasFetched(true); // ✅ mark as fetched
     }
   };
 
@@ -61,11 +65,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setRole(null);
       setEmail(null);
       setOtpState(null);
+      setHasFetched(false); // reset so next login refetches
       if (redirect) {
         window.location.href = "/auth";
       }
     }
   };
+
+  // ✅ Run once when app mounts
+  useEffect(() => {
+    fetchSession();
+  }, []);
 
   return (
     <AuthContext.Provider

@@ -16,11 +16,8 @@ export const metadata = {
 
 const HelpPage = () => {
 
-      const { name, fetchSession, clearAuth } = useAuth(); // ✅ get user data
-        // fetch session on mount to ensure user stays logged in
-        useEffect(() => {
-          fetchSession().catch(() => {});
-        }, [fetchSession]);
+      const { name, clearAuth } = useAuth(); // ✅ get user data
+
   
     // derive initials
     const getInitials = (fullName: string | null) => {
@@ -50,14 +47,17 @@ const HelpPage = () => {
                 <AvatarFallback>{getInitials(name)}</AvatarFallback>
               </Avatar>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-[#292A25] text-white">
-              <DropdownMenuItem
-                onClick={() => clearAuth()}
-                className="hover:bg-[#33352F] cursor-pointer"
-              >
-                Log Out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
+                <DropdownMenuContent
+                  align="end"
+                  className="bg-[#292A25] text-white max-w-[90vw] overflow-hidden"
+                >
+                  <DropdownMenuItem
+                    onClick={() => clearAuth()}
+                    className="hover:bg-[#33352F] cursor-pointer"
+                  >
+                    Log Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
           </DropdownMenu>
         )}
       </div>  
