@@ -38,7 +38,7 @@ const handleContinue = async () => {
 
   setLoading(true);
   try {
-    const endpoint = "/api/complete-profile"; // proxy handles the rest
+    const endpoint = "https://bildare-backend.onrender.com/complete-profile"; // proxy handles the rest
 
     const res = await fetch(endpoint, {
       method: "POST",

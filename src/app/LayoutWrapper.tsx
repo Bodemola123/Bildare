@@ -28,7 +28,7 @@ const LayoutWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) =>
       >
         {/* Logo with bounce effect */}
         <div className="animate-bounce mb-4">
-          <Image src="/BildareLogo.png" alt="Logo" width={120} height={40} />
+          <Image src="/BigBildare.svg" alt="Logo" width={120} height={40} />
         </div>
         <p className="text-lg font-semibold">Loading experience...</p>
       </div>

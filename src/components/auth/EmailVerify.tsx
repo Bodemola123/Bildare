@@ -56,7 +56,7 @@ const handleContinue = async () => {
   try {
     const email = localStorage.getItem("signupEmail"); // get the saved email
     if (!email) return toast("Email not found. Please sign up again.");
-    const endpoint = '/api/verify-otp'
+    const endpoint = 'https://bildare-backend.onrender.com/verify-otp'
 
     const res = await fetch(endpoint, {
       method: "POST",
@@ -86,7 +86,7 @@ const handleResend = async () => {
     const password =localStorage.getItem("signupPassword")
 
     if (!email) return toast("Email not found. Please sign up again.");
-    const endpoint = '/api/signup'
+    const endpoint = 'https://bildare-backend.onrender.com/signup'
 
     const res = await fetch(endpoint, {
       method: "POST",

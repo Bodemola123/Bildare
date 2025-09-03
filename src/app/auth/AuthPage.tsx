@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -9,6 +9,7 @@ import { LockKeyhole, Mail } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 interface AuthPageProps {
   setCurrentSlide: (slide: string) => void;
@@ -19,84 +20,133 @@ const AuthPage: React.FC<AuthPageProps> = ({ setCurrentSlide }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+  const [fadeOut, setFadeOut] = useState(false);
+  const [checkingSession, setCheckingSession] = useState(true);
 
-const { fetchSession } = useAuth();
+  const { fetchSession } = useAuth();
 
-const handleSubmit = async () => {
-  if (!email || !password) {
-    toast.error("Please fill in both email and password.");
-    return;
-  }
-
-  setLoading(true);
-
-  try {
-    const endpoint = isSignUp
-      ? "/api/signup"
-      : "/api/login";
-
-    const res = await fetch(endpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include", // ✅ important to send cookies
-      body: JSON.stringify({ email, password }),
-    });
-
-    const data = await res.json().catch(() => ({}));
-
-    if (res.ok) {
-      if (!isSignUp) {
-        // ✅ Login successful
-        await fetchSession();
-        setCurrentSlide("signinSuccess");
-
-        toast.success(`Welcome back, ${data.name || "user"}!`);
-      } else {
-        // ✅ Signup successful
-        localStorage.setItem("signupEmail", email);
-        localStorage.setItem("signupPassword", password);
-        setCurrentSlide("emailVerify");
-
-        toast.success("Signup successful! We sent you an OTP. Please verify your email.");
+  // ✅ Auto-check session on mount (detect Google login)
+  useEffect(() => {
+    const check = async () => {
+      try {
+        await fetchSession(); // If session exists, fetchSession will redirect
+      } catch (err: any) {
+        console.warn("Session check failed:", err);
+        toast.error("Unable to verify session. Please try again.");
+      } finally {
+        // Trigger fade-out animation before showing the form
+        setFadeOut(true);
+        setTimeout(() => setCheckingSession(false), 400); // matches transition duration
       }
-    } else if (res.status === 400) {
-      toast.error(data.error || "Bad request. Try again.");
-    } else {
-      toast.error(data.error || data.message || `Error ${res.status}`);
+    };
+    check();
+  }, [fetchSession]);
+
+  const handleSubmit = async () => {
+    if (!email || !password) {
+      toast.error("Please fill in both email and password.");
+      return;
     }
-  } catch (err) {
-    console.error("❌ Fetch error:", err);
-    toast.error("Network error. Please try again.");
-  } finally {
-    setLoading(false);
+
+    setLoading(true);
+
+    try {
+      const endpoint = isSignUp
+        ? "https://bildare-backend.onrender.com/signup"
+        : "https://bildare-backend.onrender.com/login";
+
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (res.ok) {
+        if (!isSignUp) {
+          await fetchSession();
+          setCurrentSlide("signinSuccess");
+          toast.success(`Welcome back, ${data.name || "user"}!`);
+        } else {
+          localStorage.setItem("signupEmail", email);
+          localStorage.setItem("signupPassword", password);
+          setCurrentSlide("emailVerify");
+          toast.success(
+            "Signup successful! We sent you an OTP. Please verify your email."
+          );
+        }
+      } else if (res.status === 400) {
+        console.error("❌ Server returned 400:", data);
+        toast.error(data.error || "Bad request. Try again.");
+      } else {
+        console.error(`❌ Server returned ${res.status}:`, data);
+        toast.error(data.error || data.message || `Error ${res.status}`);
+      }
+    } catch (err) {
+      console.error("❌ Fetch/network error:", err);
+      toast.error("Network error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ✅ Show loader while checking session
+  if (checkingSession) {
+    return (
+      <div
+        aria-busy="true"
+        className={`flex flex-col items-center justify-center h-screen w-screen bg-gray-900 text-white transition-opacity duration-400 ${
+          fadeOut ? "opacity-0" : "opacity-100"
+        }`}
+      >
+        <div className="animate-bounce mb-4">
+          <Image src="/BigBildare.svg" alt="Logo" width={227} height={227} />
+        </div>
+        <p className="text-lg font-semibold">Loading experience...</p>
+      </div>
+    );
   }
-};
-
-
 
   return (
     <div className="flex justify-center items-center min-h-screen px-4">
       <div className="flex flex-col bg-[#292A25] pb-[42px] rounded-[34px] items-center gap-[19px] max-w-[517px] w-full overflow-hidden">
-        
         {/* Top Image */}
         <div className="w-full h-[155px] relative">
-          <Image src="/SigninLogo.svg" alt="Auth Image" fill className="object-cover" />
+          <Image
+            src="/SigninLogo.svg"
+            alt="Auth Image"
+            fill
+            className="object-cover"
+          />
         </div>
 
         {/* Toggle */}
-        <div className={`flex justify-between items-center h-[51px] w-full px-[45px] ${isSignUp ? "flex-row" : "flex-row-reverse"}`}>
+        <div
+          className={`flex justify-between items-center h-[51px] w-full px-[45px] ${
+            isSignUp ? "flex-row" : "flex-row-reverse"
+          }`}
+        >
           <motion.button
             layout
             onClick={() => setIsSignUp(true)}
-            className={`transition-colors duration-300 ${isSignUp ? "text-white text-2xl font-semibold" : "text-[#B9F500] text-base font-bold"}`}
+            className={`transition-colors duration-300 ${
+              isSignUp
+                ? "text-white text-2xl font-semibold"
+                : "text-[#B9F500] text-base font-bold"
+            }`}
           >
             {isSignUp ? "Sign Up" : "Register"}
           </motion.button>
           <motion.button
             layout
             onClick={() => setIsSignUp(false)}
-            className={`transition-colors duration-300 ${!isSignUp ? "text-white text-2xl font-semibold" : "text-[#B9F500] text-base font-bold"}`}
+            className={`transition-colors duration-300 ${
+              !isSignUp
+                ? "text-white text-2xl font-semibold"
+                : "text-[#B9F500] text-base font-bold"
+            }`}
           >
             Login
           </motion.button>
@@ -104,8 +154,17 @@ const handleSubmit = async () => {
 
         {/* Google Button */}
         <div className="flex justify-center items-center mx-auto">
-          <button className="flex justify-center items-center bg-[#ffffff] border-[#D8DADC] border py-[18px] px-[45px] rounded-2xl cursor-pointer">
+          <button
+            className="flex justify-center items-center bg-[#ffffff] border-[#D8DADC] border py-[18px] px-[45px] rounded-2xl cursor-pointer"
+            onClick={() => {
+              window.location.href =
+                "https://bildare-backend.onrender.com/auth/google";
+            }}
+          >
             <Image src="/google.svg" alt="Google" width={20} height={20} />
+            <span className="ml-3 text-black font-semibold">
+              Continue with Google
+            </span>
           </button>
         </div>
 
@@ -167,7 +226,8 @@ const handleSubmit = async () => {
               >
                 <Checkbox id="terms" />
                 <Label htmlFor="terms" className="text-sm">
-                  I agree to receive marketing emails from Bildare, and understand I can unsubscribe at any time.
+                  I agree to receive marketing emails from Bildare, and
+                  understand I can unsubscribe at any time.
                 </Label>
               </motion.div>
             )}
@@ -180,7 +240,13 @@ const handleSubmit = async () => {
             onClick={handleSubmit}
             className="bg-[#B9F500] w-full max-h-[51px] px-[18px] py-[15px] text-center rounded-2xl text-[#000000] font-bold text-base cursor-pointer transition hover:opacity-90 mx-[20px] flex justify-center items-center gap-2"
           >
-            {loading ? <span className="animate-spin">⏳</span> : isSignUp ? "Sign Up" : "Log in"}
+            {loading ? (
+              <AiOutlineLoading3Quarters className="animate-spin text-black" />
+            ) : isSignUp ? (
+              "Sign Up"
+            ) : (
+              "Log in"
+            )}
           </button>
         </div>
       </div>

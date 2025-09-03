@@ -35,7 +35,7 @@ const handleResetPassword = async () => {
 
   setLoading(true);
   try {
-    const endpoint = '/api/reset-password'
+    const endpoint = 'https://bildare-backend.onrender.com/reset-password'
     const res = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

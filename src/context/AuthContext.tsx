@@ -20,37 +20,49 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [email, setEmail] = useState<string | null>(null);
   const [otp, setOtpState] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [hasFetched, setHasFetched] = useState(false); // ✅ track if already fetched
+const [hasFetched, setHasFetched] = useState(false);
 
-  // ✅ Fetch session from server
-  const fetchSession = async () => {
-    // Prevent duplicate calls
-    if (hasFetched) return;
+const fetchSession = async () => {
+  // Avoid repeated calls
+  if (hasFetched) return;
 
-    setIsLoading(true);
-    try {
-      const res = await fetch("https://bildare-backend.onrender.com/me", {
-        method: "GET",
-        credentials: "include",
-      });
+  setIsLoading(true);
 
-      if (res.ok) {
-        const data = await res.json();
-        setName(data.name ?? null);
-        setRole(data.role ?? null);
-        setEmail(data.email ?? null);
-      } else {
-        console.warn("Not authenticated");
-        clearAuth(false); // just clear state, don't redirect
+  try {
+    const res = await fetch("https://bildare-backend.onrender.com/me", {
+      method: "GET",
+      credentials: "include", // ✅ sends cookies/session
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      setName(data.name ?? null);
+      setRole(data.role ?? null);
+      setEmail(data.email ?? null);
+      console.log("✅ Session fetched:", data);
+
+      // Auto-detect login
+      if (typeof window !== "undefined" && window.location.pathname === "/auth") {
+        window.location.href = "/"; // redirect to main page
       }
-    } catch (err) {
-      console.error("❌ Failed to fetch session:", err);
+    } else if (res.status === 401) {
+      console.warn("❌ Not authenticated (401)");
+      clearAuth(false); // reset state, no redirect
+    } else {
+      const errorData = await res.json().catch(() => ({}));
+      console.error(`❌ Session fetch failed (${res.status}):`, errorData);
       clearAuth(false);
-    } finally {
-      setIsLoading(false);
-      setHasFetched(true); // ✅ mark as fetched
     }
-  };
+  } catch (err) {
+    console.error("❌ Network/Fetch error:", err);
+    clearAuth(false);
+  } finally {
+    setIsLoading(false);
+    setHasFetched(true);
+  }
+};
+
+
 
   const clearAuth = async (redirect: boolean = true) => {
     try {
@@ -65,7 +77,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setRole(null);
       setEmail(null);
       setOtpState(null);
-      setHasFetched(false); // reset so next login refetches
+      setHasFetched(false); // reset, so next login refetches
       if (redirect) {
         window.location.href = "/auth";
       }

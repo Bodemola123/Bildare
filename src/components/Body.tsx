@@ -18,6 +18,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"; // ✅ dropdown
 import { useAuth } from "@/context/AuthContext";
+import Whatisnew from "./Whatisnew";
 
 
 
@@ -92,9 +93,21 @@ const Body: React.FC = () => {
   const [openDropdown, setOpenDropdown] = useState<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
     const [isOpen, setIsOpen] = useState(false);
+      const [isModalOpen, setIsModalOpen] = useState(false);
+      const { name, email, clearAuth, fetchSession } = useAuth();
+    
+      useEffect(() => {
+        // Automatically fetch session on component mount
+        fetchSession();
+      }, [fetchSession]);
+    
+      const openModal = () => setIsModalOpen(true);
+      const closeModal = () => setIsModalOpen(false);
+    
+      const isAuthenticated = !!name; // if name exists, user is logged in
 
     
-  const { name, email, clearAuth } = useAuth();
+  
   const [loading, setLoading] = useState(false);
 
   // derive initials
@@ -153,6 +166,7 @@ const Body: React.FC = () => {
   }, []);
 
   return (
+    <>
     <div  className="relative flex flex-col gap-[42px] w-full bg-transparent text-white md:flex-grow md:overflow-y-auto h-full px-10 py-10 scrollbar-hide">
 
       {/* Header */}
@@ -168,7 +182,7 @@ const Body: React.FC = () => {
         </div>
 
         {/* ✅ Auth conditional */}
-        {!name ? (
+        {!isAuthenticated ? (
           <Button
             variant="ghost"
             className="px-6 py-3 rounded-2xl text-[#B9F500] font-semibold"
@@ -259,6 +273,7 @@ const Body: React.FC = () => {
         </p>
       </div>
 
+      {isAuthenticated ? (
       <Link
         href="/newadditions"
         className="flex flex-row bg-[#B9F500] px-[18px] py-[11px] gap-2.5 rounded-2xl justify-center sm:justify-start items-center text-[#000000] text-sm font-semibold w-fit self-center sm:self-start"
@@ -267,6 +282,16 @@ const Body: React.FC = () => {
         <Image src="/bstars.svg" alt="stars" width={18} height={18} />
         See What&apos;s New
       </Link>
+      ) : (
+      <button
+        onClick={openModal}
+        className="flex flex-row bg-[#B9F500] px-[18px] py-[11px] gap-2.5 rounded-2xl justify-center sm:justify-start items-center text-[#000000] text-sm font-semibold w-fit self-center sm:self-start cursor-pointer"
+        style={{ lineHeight: "145%", letterSpacing: "-0.04em" }}
+      >
+        <Image src="/bstars.svg" alt="stars" width={18} height={18} />
+        See What&apos;s New
+      </button>
+      )}
     </div>
 
     {/* Image */}
@@ -351,6 +376,10 @@ const Body: React.FC = () => {
         </button>
       </div>
     </div>
+
+          {/* Modal */}
+      {isModalOpen && <Whatisnew closeModal={closeModal} />}
+    </>
   );
 };
 
