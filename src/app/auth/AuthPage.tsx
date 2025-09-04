@@ -162,9 +162,6 @@ const AuthPage: React.FC<AuthPageProps> = ({ setCurrentSlide }) => {
             }}
           >
             <Image src="/google.svg" alt="Google" width={20} height={20} />
-            <span className="ml-3 text-black font-semibold">
-              Continue with Google
-            </span>
           </button>
         </div>
 
