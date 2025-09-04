@@ -1,8 +1,0 @@
-{
-  "rewrites": [
-    {
-      "source": "https://bildare-backend.onrender.com/(.*)",
-      "destination": "https://bildare-backend.onrender.com/$1"
-    }
-  ]
-}
