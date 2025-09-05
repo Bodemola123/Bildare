@@ -7,6 +7,7 @@ import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { useGoogleAnalytics } from "@/lib/useGoogleAnalytics";
 
 interface EmailVerifyProps {
   setCurrentSlide: (slide: string) => void;
@@ -18,30 +19,30 @@ const EmailVerify: React.FC<EmailVerifyProps> = ({ setCurrentSlide }) => {
   const [canResend, setCanResend] = useState(false);
   const [loading, setLoading] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
-  // Inside EmailVerify component
-const [email, setEmail] = useState("");
+  const [email, setEmail] = useState("");
 
-// Load email from localStorage on mount
-useEffect(() => {
-  const storedEmail = localStorage.getItem("signupEmail");
-  if (storedEmail) setEmail(storedEmail);
-}, []);
+  const { trackEvent } = useGoogleAnalytics();
 
-useEffect(() => {
-  const timer = setInterval(() => {
-    setTimeLeft((prev) => {
-      if (prev <= 1) {
-        clearInterval(timer);
-        setCanResend(true);
-        return 0;
-      }
-      return prev - 1;
-    });
-  }, 1000);
+  // Load email from localStorage on mount
+  useEffect(() => {
+    const storedEmail = localStorage.getItem("signupEmail");
+    if (storedEmail) setEmail(storedEmail);
+  }, []);
 
-  return () => clearInterval(timer);
-}, []);
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          setCanResend(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
 
+    return () => clearInterval(timer);
+  }, []);
 
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60).toString().padStart(2, "0");
@@ -49,68 +50,76 @@ useEffect(() => {
     return `${m}:${s}`;
   };
 
-const handleContinue = async () => {
-  if (otp.length < 6) return toast("Please enter the 6-digit OTP");
-  setLoading(true);
+  const handleContinue = async () => {
+    if (otp.length < 6) return toast("Please enter the 6-digit OTP");
+    setLoading(true);
 
-  try {
-    const email = localStorage.getItem("signupEmail"); // get the saved email
-    if (!email) return toast("Email not found. Please sign up again.");
-    const endpoint = 'https://bildare-backend.onrender.com/verify-otp'
+    try {
+      const email = localStorage.getItem("signupEmail");
+      if (!email) return toast("Email not found. Please sign up again.");
+      const endpoint = "https://bildare-backend.onrender.com/verify-otp";
 
-    const res = await fetch(endpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: email, otp: otp }), // include email in body
-    });
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, otp }),
+      });
 
-    if (res.ok) {
-      setCurrentSlide("basicInfo");
-      localStorage.removeItem("signupPassword");
-    } else {
-      const data = await res.json();
-      toast(data.message || "Invalid OTP");
+      if (res.ok) {
+        setCurrentSlide("basicInfo");
+        localStorage.removeItem("signupPassword");
+
+        // ✅ Track OTP verification success
+        trackEvent("otp_verified", { email });
+      } else {
+        const data = await res.json();
+        toast(data.message || "Invalid OTP");
+
+        // ✅ Track OTP verification failure
+        trackEvent("otp_failed", { email });
+      }
+    } catch (err) {
+      console.error(err);
+      toast("Something went wrong. Try again.");
+    } finally {
+      setLoading(false);
     }
-  } catch (err) {
-    console.error(err);
-    toast("Something went wrong. Try again.");
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
-const handleResend = async () => {
-  setResendLoading(true);
-  try {
-    const email = localStorage.getItem("signupEmail"); // get email for resend
-    const password =localStorage.getItem("signupPassword")
+  const handleResend = async () => {
+    setResendLoading(true);
+    try {
+      const email = localStorage.getItem("signupEmail");
+      const password = localStorage.getItem("signupPassword");
+      if (!email) return toast("Email not found. Please sign up again.");
 
-    if (!email) return toast("Email not found. Please sign up again.");
-    const endpoint = 'https://bildare-backend.onrender.com/signup'
+      const endpoint = "https://bildare-backend.onrender.com/signup";
 
-    const res = await fetch(endpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: email, password: password }), // resend requires only email
-    });
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-    if (res.ok) {
-      toast("OTP resent successfully!");
-       localStorage.removeItem("signupPassword");
-      setTimeLeft(600);
-      setCanResend(false);
-    } else {
-      const data = await res.json();
-      toast(data.message || "Failed to resend OTP");
+      if (res.ok) {
+        toast("OTP resent successfully!");
+        localStorage.removeItem("signupPassword");
+        setTimeLeft(600);
+        setCanResend(false);
+
+        // ✅ Track OTP resend
+        trackEvent("otp_resent", { email });
+      } else {
+        const data = await res.json();
+        toast(data.message || "Failed to resend OTP");
+      }
+    } catch (err) {
+      console.error(err);
+      toast("Something went wrong. Try again.");
+    } finally {
+      setResendLoading(false);
     }
-  } catch (err) {
-    console.error(err);
-    toast("Something went wrong. Try again.");
-  } finally {
-    setResendLoading(false);
-  }
-};
-
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen px-4">
@@ -129,36 +138,33 @@ const handleResend = async () => {
 
         {/* Subtitle */}
         <p className="text-sm md:text-base text-white text-center font-normal px-2 md:px-0">
-        A verification code has been sent to your email <br className="hidden md:block" />
-        <span className="font-bold">{email}</span>
+          A verification code has been sent to your email <br className="hidden md:block" />
+          <span className="font-bold">{email}</span>
         </p>
 
-
         {/* OTP Input */}
-{/* OTP Input */}
-<div className="w-full flex justify-center">
-  <InputOTP
-    value={otp}
-    onChange={(val: string) => setOtp(val)}
-    maxLength={6}
-    pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
-  >
-    <InputOTPGroup className="flex gap-3 md:gap-4">
-      {[0, 1, 2, 3, 4, 5].map((i) => (
-        <InputOTPSlot
-          key={i}
-          index={i}
-          className="w-10 h-12 md:w-12 md:h-14 text-lg md:text-xl font-semibold 
-            text-white bg-[#1C1D19] border border-[#3A3B36] 
-            rounded-xl flex items-center justify-center 
-            focus:border-[#B9F500] focus:ring-2 focus:ring-[#B9F500] 
-            transition-colors"
-        />
-      ))}
-    </InputOTPGroup>
-  </InputOTP>
-</div>
-
+        <div className="w-full flex justify-center">
+          <InputOTP
+            value={otp}
+            onChange={(val: string) => setOtp(val)}
+            maxLength={6}
+            pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
+          >
+            <InputOTPGroup className="flex gap-3 md:gap-4">
+              {[0, 1, 2, 3, 4, 5].map((i) => (
+                <InputOTPSlot
+                  key={i}
+                  index={i}
+                  className="w-10 h-12 md:w-12 md:h-14 text-lg md:text-xl font-semibold 
+                    text-white bg-[#1C1D19] border border-[#3A3B36] 
+                    rounded-xl flex items-center justify-center 
+                    focus:border-[#B9F500] focus:ring-2 focus:ring-[#B9F500] 
+                    transition-colors"
+                />
+              ))}
+            </InputOTPGroup>
+          </InputOTP>
+        </div>
 
         {/* Continue Button */}
         <Button

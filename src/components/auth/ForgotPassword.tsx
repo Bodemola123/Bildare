@@ -9,6 +9,7 @@ import { Mail } from "lucide-react";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { useGoogleAnalytics } from "@/lib/useGoogleAnalytics";
 
 interface ForgotPasswordProps {
   setCurrentSlide: (slide: string) => void;
@@ -17,35 +18,41 @@ interface ForgotPasswordProps {
 const ForgotPassword: React.FC<ForgotPasswordProps> = ({ setCurrentSlide }) => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
+  const { trackEvent } = useGoogleAnalytics();
 
-const handleSendCode = async () => {
-  if (!email) return toast("Please enter your email");
-  setLoading(true);
+  const handleSendCode = async () => {
+    if (!email) return toast("Please enter your email");
+    setLoading(true);
 
-  try {
-    const endpoint = 'https://bildare-backend.onrender.com/request-password-reset'
-    const res = await fetch(endpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: email }),
-    });
+    try {
+      const endpoint = "https://bildare-backend.onrender.com/request-password-reset";
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
 
-    if (res.ok) {
-      toast("Reset code sent successfully!");
-      localStorage.setItem("forgotPasswordEmail", email); // save email for later
-      setCurrentSlide("verifyEmail"); // move to OTP verification
-    } else {
-      const data = await res.json();
-      toast(data.message || "Failed to send reset code");
+      if (res.ok) {
+        toast("Reset code sent successfully!");
+        localStorage.setItem("forgotPasswordEmail", email);
+        setCurrentSlide("verifyEmail");
+
+        // ✅ Track reset code request
+        trackEvent("password_reset_requested", { email });
+      } else {
+        const data = await res.json();
+        toast(data.message || "Failed to send reset code");
+
+        // ✅ Track failure
+        trackEvent("password_reset_failed", { email });
+      }
+    } catch (err) {
+      console.error(err);
+      toast("Something went wrong. Try again.");
+    } finally {
+      setLoading(false);
     }
-  } catch (err) {
-    console.error(err);
-    toast("Something went wrong. Try again.");
-  } finally {
-    setLoading(false);
-  }
-};
-
+  };
 
   return (
     <div className="flex justify-center items-center min-h-screen px-4">
@@ -54,7 +61,10 @@ const handleSendCode = async () => {
         {/* Back Button */}
         <button
           className="absolute top-4 left-4 md:top-6 md:left-6 text-xl md:text-2xl font-bold p-2 rounded-xl text-white"
-          onClick={() => setCurrentSlide("auth")}
+          onClick={() => {
+            setCurrentSlide("auth");
+            trackEvent("forgot_password_back_clicked");
+          }}
         >
           <IoArrowBackOutline />
         </button>  

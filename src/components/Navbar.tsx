@@ -16,17 +16,20 @@ import { BiSolidMessageRounded } from "react-icons/bi";
 import { Separator } from "./ui/separator";
 import Whatisnew from "./Whatisnew";
 import { useAuth } from "@/context/AuthContext";
+import { useGoogleAnalytics } from "@/lib/useGoogleAnalytics";
 
 type NavItemProps = {
   icon: React.ReactNode;
   label: string;
   href?: string;
+  onClick?: () => void;
 };
 
-const NavItem: React.FC<NavItemProps> = ({ icon, label, href = "/#" }) => (
+const NavItem: React.FC<NavItemProps> = ({ icon, label, href = "/#", onClick }) => (
   <Link
     href={href}
     className="flex items-center gap-2.5 p-4 hover:bg-[#ffffff0a] hover:text-[#B9F500] rounded-xl w-[161px]"
+    onClick={onClick}
   >
     {icon}
     <p className="text-sm truncate">{label}</p>
@@ -35,17 +38,20 @@ const NavItem: React.FC<NavItemProps> = ({ icon, label, href = "/#" }) => (
 
 const Navbar: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { name, fetchSession } = useAuth(); // use name/email as auth indicator
+  const { name, fetchSession } = useAuth(); 
+  const { trackEvent } = useGoogleAnalytics();
 
   useEffect(() => {
-    // Automatically fetch session on component mount
     fetchSession();
   }, [fetchSession]);
 
-  const openModal = () => setIsModalOpen(true);
+  const openModal = () => {
+    setIsModalOpen(true);
+    trackEvent("whats_new_modal_opened");
+  };
   const closeModal = () => setIsModalOpen(false);
 
-  const isAuthenticated = !!name; // if name exists, user is logged in
+  const isAuthenticated = !!name; 
 
   return (
     <>
@@ -60,10 +66,10 @@ const Navbar: React.FC = () => {
           />
 
           {isAuthenticated ? (
-            // ✅ If logged in, show link
             <Link
               href="/newadditions"
               className="flex items-center justify-center sm:justify-start gap-2.5 bg-[#B9F50033] rounded-[16px] px-[15px] py-[11px] cursor-pointer md:w-fit w-full"
+              onClick={() => trackEvent("whats_new_link_clicked")}
             >
               <Image src="/sparkles.svg" alt="sparkle" width={18} height={18} />
               <span className="font-semibold text-sm text-[#B9F500]">
@@ -71,7 +77,6 @@ const Navbar: React.FC = () => {
               </span>
             </Link>
           ) : (
-            // ❌ If not logged in, open modal instead
             <button
               onClick={openModal}
               className="flex items-center justify-center sm:justify-start gap-2.5 bg-[#B9F50033] rounded-[16px] p-4 cursor-pointer md:w-fit w-full"
@@ -86,23 +91,23 @@ const Navbar: React.FC = () => {
 
         {/* Rest of Nav */}
         <div className="grid grid-cols-2 gap-4 md:flex md:flex-col md:gap-2">
-          <NavItem icon={<RiLayoutGridFill size={18} />} label="UI Templates" />
-          <NavItem icon={<IoLayers size={18} />} label="UI Components" />
-          <NavItem icon={<LuPenTool size={18} />} label="Animated Illustrations" />
-          <NavItem icon={<HiPresentationChartLine size={18} />} label="Pitchdecks" />
+          <NavItem icon={<RiLayoutGridFill size={18} />} label="UI Templates" onClick={() => trackEvent("nav_clicked", { item: "UI Templates" })} />
+          <NavItem icon={<IoLayers size={18} />} label="UI Components" onClick={() => trackEvent("nav_clicked", { item: "UI Components" })} />
+          <NavItem icon={<LuPenTool size={18} />} label="Animated Illustrations" onClick={() => trackEvent("nav_clicked", { item: "Animated Illustrations" })} />
+          <NavItem icon={<HiPresentationChartLine size={18} />} label="Pitchdecks" onClick={() => trackEvent("nav_clicked", { item: "Pitchdecks" })} />
         </div>
         <Separator className="bg-[#FEF9B514]" />
 
         <div className="grid grid-cols-2 gap-4 md:flex md:flex-col md:gap-2">
-          <NavItem icon={<ImBooks size={18} />} label="Resources" />
-          <NavItem icon={<HiUserGroup size={18} />} label="Community" />
+          <NavItem icon={<ImBooks size={18} />} label="Resources" onClick={() => trackEvent("nav_clicked", { item: "Resources" })} />
+          <NavItem icon={<HiUserGroup size={18} />} label="Community" onClick={() => trackEvent("nav_clicked", { item: "Community" })} />
         </div>
 
         <Separator className="bg-[#FEF9B514]" />
 
         <div className="grid grid-cols-2 gap-4 md:flex md:flex-col md:gap-2">
-          <NavItem icon={<IoMdSettings size={18} />} label="Settings" />
-          <NavItem icon={<BiSolidMessageRounded size={18} />} label="Feedback" />
+          <NavItem icon={<IoMdSettings size={18} />} label="Settings" onClick={() => trackEvent("nav_clicked", { item: "Settings" })} />
+          <NavItem icon={<BiSolidMessageRounded size={18} />} label="Feedback" onClick={() => trackEvent("nav_clicked", { item: "Feedback" })} />
         </div>
       </nav>
 

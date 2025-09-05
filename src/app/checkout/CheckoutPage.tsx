@@ -21,6 +21,7 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { toast } from "sonner"; // optional toast for errors
 
+
 const CheckoutPage = () => {
   const [date, setDate] = useState<Date | undefined>();
   const { name, email, clearAuth } = useAuth();

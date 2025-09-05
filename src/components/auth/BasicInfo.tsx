@@ -18,6 +18,7 @@ import { Button } from "../ui/button";
 import { toast } from "sonner";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { useAuth } from "@/context/AuthContext";
+import { useGoogleAnalytics } from "@/lib/useGoogleAnalytics";
 
 interface BasicInfoProps {
   setCurrentSlide: (slide: string) => void;
@@ -28,49 +29,51 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ setCurrentSlide }) => {
   const [role, setRole] = useState("");
   const [loading, setLoading] = useState(false);
 
-const { fetchSession } = useAuth(); // get from context
+  const { fetchSession } = useAuth(); // get from context
+  const { trackEvent } = useGoogleAnalytics(); // GA tracker
 
-const handleContinue = async () => {
-  if (!name || !role) return toast("Please fill in all fields");
+  const handleContinue = async () => {
+    if (!name || !role) return toast("Please fill in all fields");
 
-  const email = localStorage.getItem("signupEmail");
-  if (!email) return toast("Missing email");
+    const email = localStorage.getItem("signupEmail");
+    if (!email) return toast("Missing email");
 
-  setLoading(true);
-  try {
-    const endpoint = "https://bildare-backend.onrender.com/complete-profile"; // proxy handles the rest
+    setLoading(true);
+    try {
+      const endpoint = "https://bildare-backend.onrender.com/complete-profile";
 
-    const res = await fetch(endpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include", // ✅ important for server-side session
-      body: JSON.stringify({ email, name, role }),
-    });
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ email, name, role }),
+      });
 
-    const data = await res.json().catch(() => ({}));
+      const data = await res.json().catch(() => ({}));
 
-    if (res.ok) {
-      // ✅ Update AuthContext from server session
-      await fetchSession();
+      if (res.ok) {
+        // ✅ Update AuthContext from server session
+        await fetchSession();
 
-      toast("Profile completed successfully!");
-      setCurrentSlide("signupSuccess");
+        toast("Profile completed successfully!");
+        setCurrentSlide("signupSuccess");
 
-      // Cleanup temporary localStorage
-      localStorage.removeItem("signupEmail");
-      localStorage.removeItem("signupPassword");
-    } else {
-      toast(data.error || `Error ${res.status}: Failed to submit info`);
+        // ✅ GA tracking
+        trackEvent("profile_completed", { role });
+
+        // Cleanup temporary localStorage
+        localStorage.removeItem("signupEmail");
+        localStorage.removeItem("signupPassword");
+      } else {
+        toast(data.error || `Error ${res.status}: Failed to submit info`);
+      }
+    } catch (err) {
+      console.error("❌ Complete profile error:", err);
+      toast("Something went wrong. Try again.");
+    } finally {
+      setLoading(false);
     }
-  } catch (err) {
-    console.error("❌ Complete profile error:", err);
-    toast("Something went wrong. Try again.");
-  } finally {
-    setLoading(false);
-  }
-};
-
-
+  };
 
   return (
     <div className="flex justify-center items-center min-h-screen px-4">
@@ -104,34 +107,39 @@ const handleContinue = async () => {
           </div>
 
           {/* Role */}
-<div className="grid w-full gap-2">
-  <Label htmlFor="role">Role</Label>
-  <Select value={role} onValueChange={setRole}>
-    <SelectTrigger
-      className="
-        !h-[56px] py-0
-        bg-[#1C1D19] text-white rounded-2xl px-4
-        text-base placeholder:text-[#757575] w-full
-      "
-    >
-      <SelectValue placeholder="Select a Role" />
-    </SelectTrigger>
+          <div className="grid w-full gap-2">
+            <Label htmlFor="role">Role</Label>
+            <Select
+              value={role}
+              onValueChange={(value) => {
+                setRole(value);
+                // ✅ Track role selection
+                trackEvent("role_selected", { role: value });
+              }}
+            >
+              <SelectTrigger
+                className="
+                  !h-[56px] py-0
+                  bg-[#1C1D19] text-white rounded-2xl px-4
+                  text-base placeholder:text-[#757575] w-full
+                "
+              >
+                <SelectValue placeholder="Select a Role" />
+              </SelectTrigger>
 
-    <SelectContent
-      className="bg-[#292A25] text-white rounded-xl
-                 min-w-[var(--radix-select-trigger-width)]"
-    >
-      <SelectGroup>
-        <SelectLabel className="text-[#B9F500]">Roles</SelectLabel>
-        <SelectItem value="Developer">Developer</SelectItem>
-        <SelectItem value="Designer">Designer</SelectItem>
-        <SelectItem value="Product">Product</SelectItem>
-      </SelectGroup>
-    </SelectContent>
-  </Select>
-</div>
-
-
+              <SelectContent
+                className="bg-[#292A25] text-white rounded-xl
+                           min-w-[var(--radix-select-trigger-width)]"
+              >
+                <SelectGroup>
+                  <SelectLabel className="text-[#B9F500]">Roles</SelectLabel>
+                  <SelectItem value="Developer">Developer</SelectItem>
+                  <SelectItem value="Designer">Designer</SelectItem>
+                  <SelectItem value="Product">Product</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
         </form>
 
         {/* Continue button */}

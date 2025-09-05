@@ -10,6 +10,9 @@ import Image from "next/image";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { useGoogleAnalytics } from "@/lib/useGoogleAnalytics";
+
+
 
 interface AuthPageProps {
   setCurrentSlide: (slide: string) => void;
@@ -22,8 +25,10 @@ const AuthPage: React.FC<AuthPageProps> = ({ setCurrentSlide }) => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [checkingSession, setCheckingSession] = useState(true);
+  
 
-  const { fetchSession, fadeOut } = useAuth();
+ const { fetchSession, fadeOut } = useAuth();
+ const { trackEvent } = useGoogleAnalytics();
 
   // ✅ Auto-check session on mount (fade-out handled in AuthProvider)
   useEffect(() => {
@@ -65,18 +70,25 @@ const AuthPage: React.FC<AuthPageProps> = ({ setCurrentSlide }) => {
       const data = await res.json().catch(() => ({}));
 
       if (res.ok) {
-        if (!isSignUp) {
-          await fetchSession();
-          setCurrentSlide("signinSuccess");
-          toast.success(`Welcome back, ${data.name || "user"}!`);
-        } else {
-          localStorage.setItem("signupEmail", email);
-          localStorage.setItem("signupPassword", password);
-          setCurrentSlide("emailVerify");
-          toast.success(
-            "Signup successful! We sent you an OTP. Please verify your email."
-          );
-        }
+      if (!isSignUp) {
+        await fetchSession();
+        setCurrentSlide("signinSuccess");
+        toast.success(`Welcome back, ${data.name || "user"}!`);
+
+        // Track login
+        trackEvent("login", { method: "email" });
+      } else {
+        localStorage.setItem("signupEmail", email);
+        localStorage.setItem("signupPassword", password);
+        setCurrentSlide("emailVerify");
+        toast.success(
+          "Signup successful! We sent you an OTP. Please verify your email."
+        );
+
+        // Track signup
+        trackEvent("signup", { method: "email" });
+      }
+
       } else if (res.status === 400) {
         console.error("❌ Server returned 400:", data);
         toast.error(data.error || "Bad request. Try again.");
@@ -130,7 +142,10 @@ const AuthPage: React.FC<AuthPageProps> = ({ setCurrentSlide }) => {
         >
           <motion.button
             layout
-            onClick={() => setIsSignUp(true)}
+              onClick={() => {
+    setIsSignUp(true);
+    trackEvent("auth_toggle", { view: "signup" });
+  }}
             className={`transition-colors duration-300 ${
               isSignUp
                 ? "text-white text-2xl font-semibold"
@@ -141,7 +156,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ setCurrentSlide }) => {
           </motion.button>
           <motion.button
             layout
-            onClick={() => setIsSignUp(false)}
+            onClick={() => {setIsSignUp(false); trackEvent("auth_toggle", { view: "login" });}}
             className={`transition-colors duration-300 ${
               !isSignUp
                 ? "text-white text-2xl font-semibold"
@@ -157,12 +172,14 @@ const AuthPage: React.FC<AuthPageProps> = ({ setCurrentSlide }) => {
           <button
             className="flex justify-center items-center bg-[#ffffff] border-[#D8DADC] border py-[18px] px-[45px] rounded-2xl cursor-pointer"
             onClick={() => {
+              trackEvent("login", { method: "google" }); // Track Google login click
               window.location.href =
                 "https://bildare-backend.onrender.com/auth/google";
             }}
           >
             <Image src="/google.svg" alt="Google" width={20} height={20} />
           </button>
+
         </div>
 
         {/* Form Fields */}
@@ -196,18 +213,22 @@ const AuthPage: React.FC<AuthPageProps> = ({ setCurrentSlide }) => {
 
           <AnimatePresence>
             {!isSignUp && (
-              <motion.button
-                key="forgot"
-                type="button"
-                initial={{ opacity: 0, y: -5 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -5 }}
-                transition={{ duration: 0.3 }}
-                className="text-sm text-[#B9F500] self-end cursor-pointer hover:underline"
-                onClick={() => setCurrentSlide("forgot")}
-              >
-                Forgot password?
-              </motion.button>
+            <motion.button
+              key="forgot"
+              type="button"
+              initial={{ opacity: 0, y: -5 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -5 }}
+              transition={{ duration: 0.3 }}
+              className="text-sm text-[#B9F500] self-end cursor-pointer hover:underline"
+              onClick={() => {
+                setCurrentSlide("forgot");
+                trackEvent("forgot_password_click");
+              }}
+            >
+              Forgot password?
+            </motion.button>
+
             )}
           </AnimatePresence>
 
@@ -221,7 +242,9 @@ const AuthPage: React.FC<AuthPageProps> = ({ setCurrentSlide }) => {
                 transition={{ duration: 0.3 }}
                 className="flex flex-row justify-center items-center gap-2"
               >
-                <Checkbox id="terms" />
+                <Checkbox id="terms"   onCheckedChange={(checked) => {
+    trackEvent("terms_checkbox", { checked });
+  }} />
                 <Label htmlFor="terms" className="text-sm">
                   I agree to receive marketing emails from Bildare, and
                   understand I can unsubscribe at any time.

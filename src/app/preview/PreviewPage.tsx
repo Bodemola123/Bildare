@@ -20,10 +20,14 @@ import Link from 'next/link'
 import { useAuth } from '@/context/AuthContext';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { useGoogleAnalytics } from '@/lib/useGoogleAnalytics'
 
 
-const TemplateCard = () => (
-  <Link href="/preview" className="flex flex-col justify-between bg-[#292a25] p-6 rounded-2xl h-[387px] w-full">
+const TemplateCard = () => {
+
+  const { trackEvent } = useGoogleAnalytics()
+    return (
+  <Link href="/preview" className="flex flex-col justify-between bg-[#292a25] p-6 rounded-2xl h-[387px] w-full" onClick={() => trackEvent('template_card_click', { template: name })}>
     <div className="flex justify-between items-center">
       <span className="flex items-center gap-2 text-sm font-medium text-white">
         <Dot size={24} />
@@ -44,11 +48,13 @@ const TemplateCard = () => (
       <p className="text-[#B9F500] font-semibold text-base">$50</p>
     </div>
   </Link>
-);
+  )
+}
 
 const PreviewPage = () => {
-  const { name, email, clearAuth } = useAuth();
+  const { name, clearAuth } = useAuth();
   const [loading, setLoading] = useState(false);
+    const { trackEvent } = useGoogleAnalytics()
 
   // fetch session on mount to ensure user stays logged in
 
@@ -83,6 +89,7 @@ const PreviewPage = () => {
           <Button
             variant="ghost"
             className="px-6 py-3 rounded-2xl text-[#B9F500] font-semibold"
+            onClick={() => trackEvent('login_register_click')}
           >
             <Link href="/auth">Login / Register</Link>
           </Button>
@@ -98,7 +105,10 @@ const PreviewPage = () => {
                   className="bg-[#292A25] text-white max-w-[90vw] overflow-hidden"
                 >
                   <DropdownMenuItem
-                    onClick={() => clearAuth()}
+                  onClick={() => {
+                  clearAuth()
+                  trackEvent('logout_click')
+                }}
                     className="hover:bg-[#33352F] cursor-pointer"
                   >
                     Log Out
@@ -114,13 +124,14 @@ const PreviewPage = () => {
         <Link
           href="/"
           className="bg-[#B9F50033] flex gap-2.5 px-[18px] py-[11px] rounded-2xl text-sm font-semibold text-[#B9F500]"
+          onClick={() => trackEvent('go_back_clicked')}
         >
           <Image src='/chevron-left.svg' alt='left-arrow' width={18} height={18} />
           Go Back
         </Link>
 
         <div className="flex items-center gap-1.5 text-sm font-medium text-[#757575]">
-          <Link href="/">
+          <Link href="/" onClick={() => trackEvent('home_clicked')}>
             <House size={18} className="hover:text-white" />
           </Link>
           <ChevronRight size={18} />
@@ -140,10 +151,10 @@ const PreviewPage = () => {
         </div>
 
         <div className="flex gap-4 flex-wrap md:flex-row sm:flex-col sm:items-center sm:justify-center md:items-start md:justify-start">
-          <Link href="/checkout" className="bg-[#B9F500] flex items-center justify-center text-black hover:bg-[#B9F50099] rounded-2xl px-[18px] py-[11px] font-semibold w-full sm:max-w-[339px] md:w-max cursor-pointer">
+          <Link href="/checkout" onClick={() => trackEvent('purchase_demo_click')} className="bg-[#B9F500] flex items-center justify-center text-black hover:bg-[#B9F50099] rounded-2xl px-[18px] py-[11px] font-semibold w-full sm:max-w-[339px] md:w-max cursor-pointer">
             Purchase $50
           </Link>
-          <button className="flex items-center justify-center gap-2 px-[18px] py-[11px] rounded-2xl text-[#B9F500] hover:bg-[#B9F50033] font-bold w-full sm:max-w-[339px] md:w-max">
+          <button className="flex items-center justify-center gap-2 px-[18px] py-[11px] rounded-2xl text-[#B9F500] hover:bg-[#B9F50033] font-bold w-full sm:max-w-[339px] md:w-max" onClick={() => trackEvent('preview_demo_click')}>
             <Eye size={18} />
             Preview Demo
           </button>

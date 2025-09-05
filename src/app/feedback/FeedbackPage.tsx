@@ -10,6 +10,7 @@ import React, { useState } from 'react';
 import { IoCall } from 'react-icons/io5';
 import { toast } from 'sonner';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
+import { useGoogleAnalytics } from '@/lib/useGoogleAnalytics';
 
 const FeedbackPage = () => {
   const [name, setName] = useState('');
@@ -18,13 +19,21 @@ const FeedbackPage = () => {
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const { trackEvent } = useGoogleAnalytics();
+
   const handleSend = async () => {
     if (!name || !email || !subject || !message) {
       toast.error("Please fill in all fields.");
+      trackEvent("feedback_form_error", {
+        reason: "missing_fields",
+        page: "feedback",
+      });
       return;
     }
 
     setLoading(true);
+    trackEvent("feedback_form_submit_attempt", { page: "feedback" });
+
     try {
       const res = await fetch("https://bildare-backend.onrender.com/contact", {
         method: "POST",
@@ -35,6 +44,8 @@ const FeedbackPage = () => {
       const data = await res.json().catch(() => ({}));
       if (res.ok) {
         toast.success(data.message || "Message sent successfully!");
+        trackEvent("feedback_form_success", { page: "feedback" });
+
         // Reset form
         setName('');
         setEmail('');
@@ -42,10 +53,15 @@ const FeedbackPage = () => {
         setMessage('');
       } else {
         toast.error(data.error || "Failed to send message.");
+        trackEvent("feedback_form_error", {
+          reason: data.error || "server_error",
+          page: "feedback",
+        });
       }
     } catch (err) {
       console.error(err);
       toast.error("Network error. Try again.");
+      trackEvent("feedback_form_error", { reason: "network_error", page: "feedback" });
     } finally {
       setLoading(false);
     }
@@ -56,10 +72,13 @@ const FeedbackPage = () => {
       
       {/* Header */}
       <div className="flex justify-between items-center w-full px-[21px] py-[12px]">
-        <Link href="/">
+        <Link href="/" onClick={() => trackEvent("nav_click", { link: "home_logo", page: "feedback" })}>
           <Image src="/BildareLogo.png" alt="Bildare" width={151} height={56} />
         </Link>
-        <button className="bg-[#B9F500] md:px-[18px] md:py-[11px] px-2.5 py-1.5 text-[#000000] font-semibold text-base rounded-2xl flex items-center justify-center">
+        <button
+          className="bg-[#B9F500] md:px-[18px] md:py-[11px] px-2.5 py-1.5 text-[#000000] font-semibold text-base rounded-2xl flex items-center justify-center"
+          onClick={() => trackEvent("cta_click", { action: "get_started", page: "feedback" })}
+        >
           Get Started
         </button>
       </div>
@@ -103,6 +122,7 @@ const FeedbackPage = () => {
                 <Input
                   placeholder="John Doe"
                   value={name}
+                  onFocus={() => trackEvent("feedback_form_field_focus", { field: "name" })}
                   onChange={e => setName(e.target.value)}
                   className="pl-10 h-full placeholder:text-[#757575] text-white w-full bg-[#1C1D19]"
                 />
@@ -117,6 +137,7 @@ const FeedbackPage = () => {
                 <Input
                   placeholder="you@example.com"
                   value={email}
+                  onFocus={() => trackEvent("feedback_form_field_focus", { field: "email" })}
                   onChange={e => setEmail(e.target.value)}
                   className="pl-10 h-full placeholder:text-[#757575] text-white w-full bg-[#1C1D19]"
                 />
@@ -131,6 +152,7 @@ const FeedbackPage = () => {
                 <Input
                   placeholder="Subject"
                   value={subject}
+                  onFocus={() => trackEvent("feedback_form_field_focus", { field: "subject" })}
                   onChange={e => setSubject(e.target.value)}
                   className="pl-10 h-full placeholder:text-[#757575] text-white w-full bg-[#1C1D19]"
                 />
@@ -144,6 +166,7 @@ const FeedbackPage = () => {
               <Textarea
                 placeholder="Tell us a little bit about yourself"
                 value={message}
+                onFocus={() => trackEvent("feedback_form_field_focus", { field: "message" })}
                 onChange={e => setMessage(e.target.value)}
                 className="resize-none w-full h-[202px] bg-[#1C1D19] border border-[#292A251A] px-4 py-3 rounded-2xl"
               />
@@ -162,8 +185,6 @@ const FeedbackPage = () => {
           </button>
         </div>
       </div>
-
-      {/* Rest of the page (CTA, Newsletter, Footer) remains unchanged */}
     </div>
   );
 };
