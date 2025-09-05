@@ -3,7 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/context/AuthContext";
-import LayoutWrapper from "./LayoutWrapper";
+import Script from "next/script";
+import GoogleAnalyticsTracker from "@/context/GoogleAnalyticsTracker";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,6 +15,9 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
+
+// Put your GA Measurement ID here
+const GA_MEASUREMENT_ID = "G-FZ2G3068XM";
 
 export const metadata: Metadata = {
   title: {
@@ -78,24 +82,38 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning={true}>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased text-white bg-[#1c1d19] min-h-screen relative`}
       >
+        {/* GA scripts */}
+        <Script
+          strategy="afterInteractive"
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+        />
+        <Script
+          id="google-analytics"
+          strategy="afterInteractive"
+        >
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${GA_MEASUREMENT_ID}', { page_path: window.location.pathname });
+          `}
+        </Script>
+
         {/* Background */}
         <div className="fixed inset-0 -z-10 bg-[url('/Sample.svg')] bg-cover bg-no-repeat bg-center" />
         
         <div className="relative z-10">
-          {/* Auth provider wraps everything */}
           <AuthProvider>
-            {/* LayoutWrapper handles session fetching and loading screen */}
-              {children}
+              <GoogleAnalyticsTracker />
+            {children}
           </AuthProvider>
         </div>
         <Toaster />

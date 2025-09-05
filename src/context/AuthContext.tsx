@@ -1,6 +1,13 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useRef,
+  ReactNode,
+} from "react";
 
 interface AuthContextType {
   name: string | null;
@@ -8,6 +15,7 @@ interface AuthContextType {
   email: string | null;
   otp: string | null;
   isLoading: boolean;
+  fadeOut: boolean;
   fetchSession: () => Promise<void>;
   clearAuth: (redirect?: boolean) => void;
 }
@@ -20,49 +28,52 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [email, setEmail] = useState<string | null>(null);
   const [otp, setOtpState] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-const [hasFetched, setHasFetched] = useState(false);
+  const [fadeOut, setFadeOut] = useState(false);
 
-const fetchSession = async () => {
-  // Avoid repeated calls
-  if (hasFetched) return;
+  const hasFetchedRef = useRef(false); // ensures fetchSession runs only once
+  const redirectTimeoutRef = useRef<NodeJS.Timeout | null>(null); // for fade-out redirect
 
-  setIsLoading(true);
+  const fetchSession = async () => {
+    if (hasFetchedRef.current) return; // Already fetched
+    hasFetchedRef.current = true;
 
-  try {
-    const res = await fetch("https://bildare-backend.onrender.com/me", {
-      method: "GET",
-      credentials: "include", // ✅ sends cookies/session
-    });
+    setIsLoading(true);
 
-    if (res.ok) {
-      const data = await res.json();
-      setName(data.name ?? null);
-      setRole(data.role ?? null);
-      setEmail(data.email ?? null);
-      console.log("✅ Session fetched:", data);
+    try {
+      const res = await fetch("https://bildare-backend.onrender.com/me", {
+        method: "GET",
+        credentials: "include",
+      });
 
-      // Auto-detect login
-      if (typeof window !== "undefined" && window.location.pathname === "/auth") {
-        window.location.href = "/"; // redirect to main page
+      if (res.ok) {
+        const data = await res.json();
+        setName(data.name ?? null);
+        setRole(data.role ?? null);
+        setEmail(data.email ?? null);
+        console.log("✅ Session fetched:", data);
+
+        // Auto-redirect if user is on /auth
+        if (typeof window !== "undefined" && window.location.pathname === "/auth") {
+          setFadeOut(true); // trigger fade-out animation
+          redirectTimeoutRef.current = setTimeout(() => {
+            window.location.href = "/";
+          }, 300); // match fade transition duration
+        }
+      } else if (res.status === 401) {
+        console.warn("❌ Not authenticated (401)");
+        clearAuth(false);
+      } else {
+        const errorData = await res.json().catch(() => ({}));
+        console.error(`❌ Session fetch failed (${res.status}):`, errorData);
+        clearAuth(false);
       }
-    } else if (res.status === 401) {
-      console.warn("❌ Not authenticated (401)");
-      clearAuth(false); // reset state, no redirect
-    } else {
-      const errorData = await res.json().catch(() => ({}));
-      console.error(`❌ Session fetch failed (${res.status}):`, errorData);
+    } catch (err) {
+      console.error("❌ Network/Fetch error:", err);
       clearAuth(false);
+    } finally {
+      setIsLoading(false);
     }
-  } catch (err) {
-    console.error("❌ Network/Fetch error:", err);
-    clearAuth(false);
-  } finally {
-    setIsLoading(false);
-    setHasFetched(true);
-  }
-};
-
-
+  };
 
   const clearAuth = async (redirect: boolean = true) => {
     try {
@@ -77,21 +88,24 @@ const fetchSession = async () => {
       setRole(null);
       setEmail(null);
       setOtpState(null);
-      setHasFetched(false); // reset, so next login refetches
+      hasFetchedRef.current = false; // allow refetch next time
       if (redirect) {
         window.location.href = "/auth";
       }
     }
   };
 
-  // ✅ Run once when app mounts
+  // ✅ Run once on mount
   useEffect(() => {
     fetchSession();
+    return () => {
+      if (redirectTimeoutRef.current) clearTimeout(redirectTimeoutRef.current);
+    };
   }, []);
 
   return (
     <AuthContext.Provider
-      value={{ name, role, email, otp, isLoading, fetchSession, clearAuth }}
+      value={{ name, role, email, otp, isLoading, fadeOut, fetchSession, clearAuth }}
     >
       {children}
     </AuthContext.Provider>

@@ -15,31 +15,31 @@ interface AuthPageProps {
   setCurrentSlide: (slide: string) => void;
 }
 
+
 const AuthPage: React.FC<AuthPageProps> = ({ setCurrentSlide }) => {
   const [isSignUp, setIsSignUp] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [fadeOut, setFadeOut] = useState(false);
   const [checkingSession, setCheckingSession] = useState(true);
 
-  const { fetchSession } = useAuth();
+  const { fetchSession, fadeOut } = useAuth();
 
-  // ✅ Auto-check session on mount (detect Google login)
+  // ✅ Auto-check session on mount (fade-out handled in AuthProvider)
   useEffect(() => {
+    let timeout: NodeJS.Timeout;
     const check = async () => {
       try {
-        await fetchSession(); // If session exists, fetchSession will redirect
-      } catch (err: any) {
-        console.warn("Session check failed:", err);
+        await fetchSession(); // single fetch, may redirect if logged in
+      } catch (err) {
         toast.error("Unable to verify session. Please try again.");
       } finally {
-        // Trigger fade-out animation before showing the form
-        setFadeOut(true);
-        setTimeout(() => setCheckingSession(false), 400); // matches transition duration
+        // wait for AuthProvider's fadeOut to complete before showing form
+        timeout = setTimeout(() => setCheckingSession(false), 400);
       }
     };
     check();
+    return () => clearTimeout(timeout); // prevent memory leaks
   }, [fetchSession]);
 
   const handleSubmit = async () => {
@@ -92,7 +92,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ setCurrentSlide }) => {
     }
   };
 
-  // ✅ Show loader while checking session
+  // ✅ Loader while checking session
   if (checkingSession) {
     return (
       <div
@@ -162,9 +162,6 @@ const AuthPage: React.FC<AuthPageProps> = ({ setCurrentSlide }) => {
             }}
           >
             <Image src="/google.svg" alt="Google" width={20} height={20} />
-            <span className="ml-3 text-black font-semibold">
-              Continue with Google
-            </span>
           </button>
         </div>
 
