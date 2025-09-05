@@ -109,7 +109,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ setCurrentSlide }) => {
     return (
       <div
         aria-busy="true"
-        className={`flex flex-col items-center justify-center h-screen w-screen bg-gray-900 text-white transition-opacity duration-400 ${
+        className={`flex flex-col items-center justify-center h-screen w-screen bg-[#1F201C] text-white transition-opacity duration-400 ${
           fadeOut ? "opacity-0" : "opacity-100"
         }`}
       >

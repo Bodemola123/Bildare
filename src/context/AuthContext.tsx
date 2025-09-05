@@ -50,7 +50,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setName(data.name ?? null);
         setRole(data.role ?? null);
         setEmail(data.email ?? null);
-        console.log("✅ Session fetched:", data);
+        // console.log("✅ Session fetched:", data);
 
         // Auto-redirect if user is on /auth
         if (typeof window !== "undefined" && window.location.pathname === "/auth") {

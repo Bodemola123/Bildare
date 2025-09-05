@@ -1,4 +1,3 @@
-// lib/useGoogleAnalytics.ts
 "use client";
 
 import { usePathname } from "next/navigation";
@@ -10,7 +9,6 @@ declare global {
   }
 }
 
-// Replace with your GA Measurement ID
 const GA_MEASUREMENT_ID = "G-FZ2G3068XM";
 
 export const useGoogleAnalytics = () => {
@@ -18,16 +16,35 @@ export const useGoogleAnalytics = () => {
 
   // Track pageviews
   useEffect(() => {
-    if (!window.gtag) return;
+    const sendPageview = () => {
+      if (typeof window.gtag !== "undefined") {
+        console.log("[GA] Sending pageview:", pathname);
+        window.gtag("config", GA_MEASUREMENT_ID, {
+          page_path: pathname,
+        });
+        return true;
+      } else {
+        console.log("[GA] gtag not ready, retrying...");
+        return false;
+      }
+    };
 
-    window.gtag("config", GA_MEASUREMENT_ID, {
-      page_path: pathname,
-    });
+    // Try immediately, then retry until GA is ready
+    if (!sendPageview()) {
+      const interval = setInterval(() => {
+        if (sendPageview()) clearInterval(interval);
+      }, 500);
+      return () => clearInterval(interval);
+    }
   }, [pathname]);
 
   // Function to track custom events
   const trackEvent = (name: string, params?: Record<string, any>) => {
-    if (!window.gtag) return;
+    if (typeof window.gtag === "undefined") {
+      console.log("[GA] Tried to send event but gtag not ready:", name, params);
+      return;
+    }
+    console.log("[GA] Sending event:", name, params);
     window.gtag("event", name, params);
   };
 
