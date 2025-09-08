@@ -4,7 +4,6 @@ import { useAuth } from "@/context/AuthContext";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 
-
 declare global {
   interface Window {
     gtag: (...args: any[]) => void;
@@ -15,7 +14,17 @@ const GA_MEASUREMENT_ID = "G-FZ2G3068XM";
 
 export const useGoogleAnalytics = () => {
   const pathname = usePathname();
-  const { userId } = useAuth(); // ✅ grab userId
+
+  // ✅ Wrap useAuth safely — never throws, always returns something
+  const auth = (() => {
+    try {
+      return useAuth();
+    } catch {
+      return null; // No provider (e.g., not-found)
+    }
+  })();
+
+  const userId = auth?.userId ?? null;
 
   // Track pageviews
   useEffect(() => {
@@ -24,7 +33,7 @@ export const useGoogleAnalytics = () => {
         console.log("[GA] Sending pageview:", pathname, "userId:", userId);
         window.gtag("config", GA_MEASUREMENT_ID, {
           page_path: pathname,
-          user_id: userId || undefined, // ✅ attach userId if available
+          user_id: userId || undefined,
         });
         return true;
       } else {
@@ -33,16 +42,15 @@ export const useGoogleAnalytics = () => {
       }
     };
 
-    // Try immediately, then retry until GA is ready
     if (!sendPageview()) {
       const interval = setInterval(() => {
         if (sendPageview()) clearInterval(interval);
       }, 500);
       return () => clearInterval(interval);
     }
-  }, [pathname, userId]);
+  }, [pathname, userId]); // ✅ re-run when userId changes
 
-  // Function to track custom events (with userId always included)
+  // Custom events
   const trackEvent = (name: string, params?: Record<string, any>) => {
     if (typeof window.gtag === "undefined") {
       console.log("[GA] Tried to send event but gtag not ready:", name, params);
@@ -51,7 +59,7 @@ export const useGoogleAnalytics = () => {
 
     const fullParams = {
       ...params,
-      user_id: userId || undefined, // ✅ always include userId
+      user_id: userId || undefined,
     };
 
     console.log("[GA] Sending event:", name, fullParams);
