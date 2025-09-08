@@ -8,7 +8,7 @@ import React, {
   useRef,
   ReactNode,
 } from "react";
-import { useGoogleAnalytics } from "@/lib/useGoogleAnalytics";
+import { useGoogleAnalytics } from "@/lib/useGoogleAnalytics"; // ✅ import GA hook
 
 interface AuthContextType {
   userId: string | null;
@@ -33,10 +33,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [fadeOut, setFadeOut] = useState(false);
 
+  const { trackEvent } = useGoogleAnalytics(); // ✅ GA tracker
+
   const hasFetchedRef = useRef(false);
   const redirectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  const { trackEvent } = useGoogleAnalytics();
 
   const fetchSession = async () => {
     if (hasFetchedRef.current) return;
@@ -53,20 +53,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (res.ok) {
         const data = await res.json();
 
-        setUserId(data.id ?? null);
+        setUserId(data.userId ?? null);
         setName(data.name ?? null);
         setRole(data.role ?? null);
         setEmail(data.email ?? null);
 
-        // ✅ Tell GA the user id
-        if (typeof window !== "undefined" && window.gtag && data.id) {
-          console.log("[GA] Setting user_id:", data.id);
-          window.gtag("set", { user_id: data.id });
-          trackEvent("user_logged_in", { user_id: data.id, role: data.role });
+        // ✅ Automatically track login success
+        if (data.userId) {
+          trackEvent("login_success", {
+            user_id: data.userId,
+            role: data.role,
+            email: data.email,
+          });
         }
 
-        // Redirect if on /auth
-        if (typeof window !== "undefined" && window.location.pathname === "/auth") {
+        // Redirect if user is on /auth
+        if (
+          typeof window !== "undefined" &&
+          window.location.pathname === "/auth"
+        ) {
           setFadeOut(true);
           redirectTimeoutRef.current = setTimeout(() => {
             window.location.href = "/";
@@ -90,6 +95,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const clearAuth = async (redirect: boolean = true) => {
     try {
+      // ✅ Fire logout event before clearing user
+      if (userId) {
+        trackEvent("logout", {
+          user_id: userId,
+          role,
+          email,
+        });
+      }
+
       await fetch("https://bildare-backend.onrender.com/logout", {
         method: "POST",
         credentials: "include",
@@ -119,7 +133,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <AuthContext.Provider
-      value={{ userId, name, role, email, otp, isLoading, fadeOut, fetchSession, clearAuth }}
+      value={{
+        userId,
+        name,
+        role,
+        email,
+        otp,
+        isLoading,
+        fadeOut,
+        fetchSession,
+        clearAuth,
+      }}
     >
       {children}
     </AuthContext.Provider>
