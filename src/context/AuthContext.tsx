@@ -8,8 +8,10 @@ import React, {
   useRef,
   ReactNode,
 } from "react";
+import { useGoogleAnalytics } from "@/lib/useGoogleAnalytics";
 
 interface AuthContextType {
+  userId: string | null;
   name: string | null;
   role: string | null;
   email: string | null;
@@ -23,6 +25,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [userId, setUserId] = useState<string | null>(null);
   const [name, setName] = useState<string | null>(null);
   const [role, setRole] = useState<string | null>(null);
   const [email, setEmail] = useState<string | null>(null);
@@ -30,11 +33,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [fadeOut, setFadeOut] = useState(false);
 
-  const hasFetchedRef = useRef(false); // ensures fetchSession runs only once
-  const redirectTimeoutRef = useRef<NodeJS.Timeout | null>(null); // for fade-out redirect
+  const hasFetchedRef = useRef(false);
+  const redirectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const { trackEvent } = useGoogleAnalytics();
 
   const fetchSession = async () => {
-    if (hasFetchedRef.current) return; // Already fetched
+    if (hasFetchedRef.current) return;
     hasFetchedRef.current = true;
 
     setIsLoading(true);
@@ -47,17 +52,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       if (res.ok) {
         const data = await res.json();
+
+        setUserId(data.id ?? null);
         setName(data.name ?? null);
         setRole(data.role ?? null);
         setEmail(data.email ?? null);
-        // console.log("✅ Session fetched:", data);
 
-        // Auto-redirect if user is on /auth
+        // ✅ Tell GA the user id
+        if (typeof window !== "undefined" && window.gtag && data.id) {
+          console.log("[GA] Setting user_id:", data.id);
+          window.gtag("set", { user_id: data.id });
+          trackEvent("user_logged_in", { user_id: data.id, role: data.role });
+        }
+
+        // Redirect if on /auth
         if (typeof window !== "undefined" && window.location.pathname === "/auth") {
-          setFadeOut(true); // trigger fade-out animation
+          setFadeOut(true);
           redirectTimeoutRef.current = setTimeout(() => {
             window.location.href = "/";
-          }, 300); // match fade transition duration
+          }, 300);
         }
       } else if (res.status === 401) {
         console.warn("❌ Not authenticated (401)");
@@ -84,18 +97,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } catch (err) {
       console.error("❌ Logout request failed:", err);
     } finally {
+      setUserId(null);
       setName(null);
       setRole(null);
       setEmail(null);
       setOtpState(null);
-      hasFetchedRef.current = false; // allow refetch next time
+      hasFetchedRef.current = false;
+
       if (redirect) {
         window.location.href = "/auth";
       }
     }
   };
 
-  // ✅ Run once on mount
   useEffect(() => {
     fetchSession();
     return () => {
@@ -105,7 +119,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <AuthContext.Provider
-      value={{ name, role, email, otp, isLoading, fadeOut, fetchSession, clearAuth }}
+      value={{ userId, name, role, email, otp, isLoading, fadeOut, fetchSession, clearAuth }}
     >
       {children}
     </AuthContext.Provider>
