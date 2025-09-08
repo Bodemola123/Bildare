@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { useGoogleAnalytics } from "@/lib/useGoogleAnalytics";
+import { FaGithub } from "react-icons/fa";
 
 
 
@@ -167,8 +168,8 @@ const AuthPage: React.FC<AuthPageProps> = ({ setCurrentSlide }) => {
           </motion.button>
         </div>
 
-        {/* Google Button */}
-        <div className="flex justify-center items-center mx-auto">
+        {/* Google/Github Button */}
+        <div className="flex justify-center items-center mx-auto flex-wrap gap-4">
           <button
             className="flex justify-center items-center bg-[#ffffff] border-[#D8DADC] border py-[18px] px-[45px] rounded-2xl cursor-pointer"
             onClick={() => {
@@ -179,7 +180,16 @@ const AuthPage: React.FC<AuthPageProps> = ({ setCurrentSlide }) => {
           >
             <Image src="/google.svg" alt="Google" width={20} height={20} />
           </button>
-
+          <button
+            className="flex justify-center items-center bg-[#000000] border-[#D8DADC] border py-[18px] px-[45px] rounded-2xl cursor-pointer"
+            onClick={() => {
+              trackEvent("login", { method: "github" }); // Track Google login click
+              window.location.href =
+                "https://bildare-backend.onrender.com/auth/github";
+            }}
+          >
+            <FaGithub className="text-xl"/>
+          </button>
         </div>
 
         {/* Form Fields */}

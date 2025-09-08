@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 // Put your GA Measurement ID here
-const GA_MEASUREMENT_ID = "G-FZ2G3068XM";
+const GA_MEASUREMENT_ID = "G-Z9N49E2FSH";
 
 export const metadata: Metadata = {
   title: {
