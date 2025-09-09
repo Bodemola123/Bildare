@@ -7,6 +7,7 @@ import { useEffect } from "react";
 declare global {
   interface Window {
     gtag: (...args: any[]) => void;
+    dataLayer: any[];
   }
 }
 
@@ -15,55 +16,46 @@ const GA_MEASUREMENT_ID = "G-Z9N49E2FSH";
 export const useGoogleAnalytics = () => {
   const pathname = usePathname();
 
-  // ✅ Wrap useAuth safely — never throws, always returns something
   const auth = (() => {
     try {
       return useAuth();
     } catch {
-      return null; // No provider (e.g., not-found)
+      return null;
     }
   })();
 
   const userId = auth?.userId ?? null;
 
-  // Track pageviews
-  useEffect(() => {
-    const sendPageview = () => {
-      if (typeof window.gtag !== "undefined") {
-        console.log("[GA] Sending pageview:", pathname, "userId:", userId);
-        window.gtag("config", GA_MEASUREMENT_ID, {
-          page_path: pathname,
-          user_id: userId || undefined,
-        });
-        return true;
-      } else {
-        console.log("[GA] gtag not ready, retrying...");
-        return false;
-      }
-    };
-
-    if (!sendPageview()) {
-      const interval = setInterval(() => {
-        if (sendPageview()) clearInterval(interval);
-      }, 500);
-      return () => clearInterval(interval);
-    }
-  }, [pathname, userId]); // ✅ re-run when userId changes
-
-  // Custom events
-  const trackEvent = (name: string, params?: Record<string, any>) => {
-    if (typeof window.gtag === "undefined") {
-      console.log("[GA] Tried to send event but gtag not ready:", name, params);
+  // Force gtag to debug mode and retry sending events
+  const sendGtag = (command: string, ...params: any[]) => {
+    if (!window.gtag) {
+      console.log("[GA] gtag not ready, retrying in 500ms...");
+      setTimeout(() => sendGtag(command, ...params), 500);
       return;
     }
 
+    // Debug mode forces GA to register events for testing
+    window.gtag("set", "debug_mode", true);
+
+    console.log("[GA] Sending:", command, params);
+    window.gtag(command, ...params);
+  };
+
+  // Track pageviews
+  useEffect(() => {
+    sendGtag("config", GA_MEASUREMENT_ID, {
+      page_path: pathname,
+      user_id: userId || undefined,
+    });
+  }, [pathname, userId]);
+
+  // Custom events
+  const trackEvent = (name: string, params?: Record<string, any>) => {
     const fullParams = {
       ...params,
       user_id: userId || undefined,
     };
-
-    console.log("[GA] Sending event:", name, fullParams);
-    window.gtag("event", name, fullParams);
+    sendGtag("event", name, fullParams);
   };
 
   return { trackEvent };
