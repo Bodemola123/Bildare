@@ -50,13 +50,22 @@ export const useGoogleAnalytics = () => {
   }, [pathname, userId]);
 
   // Custom events
-  const trackEvent = (name: string, params?: Record<string, any>) => {
-    const fullParams = {
-      ...params,
-      user_id: userId || undefined,
-    };
-    sendGtag("event", name, fullParams);
+const trackEvent = (name: string, params?: Record<string, any>) => {
+  const fullParams = {
+    ...params,
+    user_id: userId || undefined,
+    user_name: auth?.name || undefined, // 👈 add this
   };
+  sendGtag("event", name, fullParams);
+};
+
+useEffect(() => {
+  if (auth?.name) {
+    sendGtag("set", { user_name: auth.name });
+  }
+}, [auth?.name]);
+
+
 
   return { trackEvent };
 };
