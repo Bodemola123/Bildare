@@ -52,16 +52,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       if (res.ok) {
         const data = await res.json();
-
-        setUserId(data.userId ?? null);
+        setUserId(data.id ?? null);
         setName(data.name ?? null);
         setRole(data.role ?? null);
         setEmail(data.email ?? null);
 
         // ✅ Automatically track login success
-        if (data.userId) {
+        if (data.id) {
           trackEvent("login_success", {
-            user_id: data.userId,
+            user_id: data.id,
             role: data.role,
             email: data.email,
           });
