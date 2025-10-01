@@ -1,312 +1,172 @@
-'use client'
+"use client";
 
 import {
-  ChevronRight,
   Clock3,
-  Dot,
   Eye,
   GalleryHorizontal,
-  House,
-  Search,
   Smartphone,
-  SquareChevronLeft
-} from 'lucide-react'
-import Image from 'next/image'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import React, { useEffect, useState } from 'react'
-import { Separator } from '@radix-ui/react-separator'
-import Link from 'next/link'
-import { useAuth } from '@/context/AuthContext';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { useGoogleAnalytics } from '@/lib/useGoogleAnalytics'
+} from "lucide-react";
+import Image from "next/image";
+import React, { useEffect } from "react";
+import { Separator } from "@radix-ui/react-separator";
+import Link from "next/link";
+import { useGoogleAnalytics } from "@/lib/useGoogleAnalytics";
+import { TemplateCard } from "@/components/Body";
+import { RxCross1 } from "react-icons/rx";
 
-
-const TemplateCard = () => {
-
-  const { trackEvent } = useGoogleAnalytics()
-    return (
-  <Link href="/preview" className="flex flex-col justify-between bg-[#292a25] p-6 rounded-2xl h-[387px] w-full" onClick={() => trackEvent('template_card_click', { template: name })}>
-    <div className="flex justify-between items-center">
-      <span className="flex items-center gap-2 text-sm font-medium text-white">
-        <Dot size={24} />
-        Template Name
-      </span>
-      <div className="bg-[#1C1D19] text-sm font-medium px-3 py-1.5 rounded-full">
-        Preview
-      </div>
-    </div>
-
-    <div className="flex justify-between items-center">
-      <div className="flex items-center gap-3">
-        <Image src="/reactjs.svg" alt="React" width={18} height={18} />
-        <Image src="/tailwind.svg" alt="Tailwind" width={18} height={18} />
-        <Image src="/javascript.svg" alt="JS" width={18} height={18} />
-        <Image src="/figmaa.svg" alt="Figma" width={18} height={18} />
-      </div>
-      <p className="text-[#B9F500] font-semibold text-base">$50</p>
-    </div>
-  </Link>
-  )
+interface PreviewPageModalProps {
+  isOpen: boolean;
+  onClose: () => void;
 }
 
-const PreviewPage = () => {
-  const { name, clearAuth } = useAuth();
-  const [loading, setLoading] = useState(false);
-    const { trackEvent } = useGoogleAnalytics()
+const PreviewPageModal: React.FC<PreviewPageModalProps> = ({ isOpen, onClose }) => {
+  const { trackEvent } = useGoogleAnalytics();
 
-  // fetch session on mount to ensure user stays logged in
+  // 🔑 Close on ESC key
+  useEffect(() => {
+    if (!isOpen) return;
 
-  // derive initials
-  const getInitials = (fullName: string | null) => {
-    if (!fullName) return "";
-    const parts = fullName.trim().split(" ");
-    if (parts.length === 1) return parts[0][0].toUpperCase();
-    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-  };
+    const handleEsc = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    };
 
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
 
   return (
-    <div className="flex flex-col gap-10 w-full min-h-screen text-white px-6 py-10 overflow-y-auto scrollbar-hide h-full md:px-[160px]">
-      
-      {/* Header */}
-<header className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 w-full">
-  {/* Title */}
-  <h1 className="text-2xl font-bold">Templates</h1>
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      {/* Backdrop (non-clickable now) */}
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm pointer-events-none" />
 
-  {/* Search Input */}
-  <div className="flex items-center bg-[#292A25] px-4 py-3 rounded-2xl border border-[#292A251A] w-full max-w-[440px] max-h-[46px]">
-    <Search className="text-[#858585]" size={20} />
-    <Input
-      placeholder="Search categories, templates, UIs, components..."
-      className="ml-3 placeholder:text-[#757575] border-none bg-transparent focus:ring-0"
-    />
-  </div>
-
-        {/* ✅ Auth conditional */}
-        {!name ? (
-          <Button
-            variant="ghost"
-            className="px-6 py-3 rounded-2xl text-[#B9F500] font-semibold"
-            onClick={() => trackEvent('login_register_click')}
-          >
-            <Link href="/auth">Login / Register</Link>
-          </Button>
-        ) : (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Avatar className="cursor-pointer !w-10 !h-10">
-                <AvatarFallback>{getInitials(name)}</AvatarFallback>
-              </Avatar>
-            </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  align="end"
-                  className="bg-[#292A25] text-white max-w-[90vw] overflow-hidden"
-                >
-                  <DropdownMenuItem
-                  onClick={() => {
-                  clearAuth()
-                  trackEvent('logout_click')
-                }}
-                    className="hover:bg-[#33352F] cursor-pointer"
-                  >
-                    Log Out
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-          </DropdownMenu>
-        )}
-</header>
-
-
-      {/* Breadcrumb & Go Back */}
-      <div className="flex flex-wrap items-center gap-6">
-        <Link
-          href="/"
-          className="bg-[#B9F50033] flex gap-2.5 px-[18px] py-[11px] rounded-2xl text-sm font-semibold text-[#B9F500]"
-          onClick={() => trackEvent('go_back_clicked')}
-        >
-          <Image src='/chevron-left.svg' alt='left-arrow' width={18} height={18} />
-          Go Back
-        </Link>
-
-        <div className="flex items-center gap-1.5 text-sm font-medium text-[#757575]">
-          <Link href="/" onClick={() => trackEvent('home_clicked')}>
-            <House size={18} className="hover:text-white" />
-          </Link>
-          <ChevronRight size={18} />
-          <p className="hover:text-white">UI Templates</p>
-          <ChevronRight size={18} className="text-white" />
-          <p className="text-white">Blockchain</p>
-        </div>
-      </div>
-
-      {/* Template Header */}
-      <div className="flex flex-col gap-6">
-        <div className="flex flex-col gap-4">
-          <h2 className="text-5xl font-bold text-white">Template Name</h2>
-          <p className="max-w-[600px] text-[#B0B0B0] line-clamp-1">
-            Dive into the future of technology with organized categories, visually stunning design, and interactive features.
-          </p>
-        </div>
-
-        <div className="flex gap-4 flex-wrap md:flex-row sm:flex-col sm:items-center sm:justify-center md:items-start md:justify-start">
-          <Link href="/checkout" onClick={() => trackEvent('purchase_demo_click')} className="bg-[#B9F500] flex items-center justify-center text-black hover:bg-[#B9F50099] rounded-2xl px-[18px] py-[11px] font-semibold w-full sm:max-w-[339px] md:w-max cursor-pointer">
-            Purchase $50
-          </Link>
-          <button className="flex items-center justify-center gap-2 px-[18px] py-[11px] rounded-2xl text-[#B9F500] hover:bg-[#B9F50033] font-bold w-full sm:max-w-[339px] md:w-max" onClick={() => trackEvent('preview_demo_click')}>
-            <Eye size={18} />
-            Preview Demo
+      {/* Modal Content */}
+      <div className="relative z-10 flex flex-col gap-10 w-[90%] h-[85%] md:h-[90%] md:max-h-[90%] md:w-[85%] lg:w-[75%] xl:w-[65%] bg-[#1C1D19] rounded-2xl md:rounded-2xl overflow-y-auto scrollbar-hide">
+        {/* Header */}
+        <header className="flex px-[38px] pt-[38px] items-center justify-between w-full sticky top-0 bg-[#1C1D19] z-20">
+          <h1 className="text-xl md:text-2xl font-bold text-white">
+            Templates name
+          </h1>
+          <button onClick={onClose}>
+            <RxCross1 className="text-white text-lg cursor-pointer hover:text-[#B9F500]" />
           </button>
-        </div>
+        </header>
 
-<div className="flex flex-wrap md:flex-nowrap gap-4 md:gap-6 bg-[#292A25] px-[31px] py-[20px] rounded-3xl text-sm font-medium w-full md:w-fit">
-  <div className="flex items-center gap-2">
-    <Clock3 size={16} />
-    23 Jul, 2025
-  </div>
-  <div className="flex items-center gap-2">
-    <GalleryHorizontal size={16} />
-    8 pages
-  </div>
-  <div className="flex items-center gap-2">
-    <Eye size={16} />
-    20k views
-  </div>
-  <div className="flex items-center gap-2">
-    <Smartphone size={16} />
-    Responsive
-  </div>
-</div>
+        {/* Body */}
+        <div className="flex flex-col px-[38px] pb-[38px] md:flex-row items-start justify-center gap-6">
+          {/* Left Column */}
+          <div className="flex flex-col gap-4 items-center w-full ">
+            <div className="w-full h-[250px] sm:h-[396px] rounded-2xl bg-[#292A25]" />
+            <div className="flex gap-2 w-full justify-center">
+              <div className="flex-1 h-[100px] sm:h-[138px] rounded-2xl bg-[#292A25]" />
+              <div className="flex-1 h-[100px] sm:h-[138px] rounded-2xl bg-[#292A25]" />
+              <div className="flex-1 h-[100px] sm:h-[138px] rounded-2xl bg-[#292A25]" />
+            </div>
+          </div>
 
-      </div>
-
-      {/* Image Previews */}
-<div className="flex justify-center w-full">
-  <div className="grid grid-cols-1 md:grid-cols-2 md:grid-rows-2 gap-4 w-full">
-    {[1, 2, 3, 4].map((i) => (
-      <div
-        key={i}
-        className={`bg-[#292A25] rounded-2xl h-[392px] w-full`}
-      />
-    ))}
-  </div>
-</div>
-
-
-      {/* Description and Info */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 w-full">
-        {/* About Template */}
-        <div className="flex flex-col gap-8">
-          <h3 className="text-3xl font-bold">About This Template</h3>
-          <p className="text-[#B0B0B0] text-base "
-           style={{ lineHeight: "145%", letterSpacing: "-0.04em" }}>
-            Meet AstroClash, a fully-featured Play-to-Earn NFT Marketplace Kit, including exclusive design files all editable in Figma plus a pack of custom, beautiful 3D illustrations.
-              <br /><br />
-
-This package includes a responsive and fully customized landing page template with 400+ clean & minimal pre-made screens. We've added a lot of different content to maximize the number of layout options and configurations. Drag, drop, and mix different parts to quickly build your own NFT marketplace in a matter of minutes.
-  <br /><br />
-
-Buy it now and get the upcoming coded version in React (Now available), HTML version coming up next!
-  <br /><br />
-
-Let us know your thoughts or requests in the comments section below.
-
-          
-          </p>
-
-          <div className="flex flex-col gap-4">
-            <h4 className="text-2xl font-bold">Features</h4>
-            {[
-              "400+ Exclusive Pre-Built Templates",
-              "Feature 1",
-              "Feature 2",
-              "Feature 3",
-              "Feature 4"
-            ].map((feature, idx) => (
-              <div
-                key={idx}
-                className="bg-[#292A25] py-2 px-4 rounded-lg max-w-xs text-sm font-medium"
+          {/* Right Column */}
+          <div className="flex flex-col gap-6 w-full">
+            {/* Buttons */}
+            <div className="flex flex-col sm:flex-row gap-3 w-full">
+              <Link
+                href="/checkout"
+                onClick={() => trackEvent("purchase_demo_click")}
+                className="bg-[#B9F500] flex items-center justify-center text-black hover:bg-[#B9F50099] rounded-2xl px-[18px] py-[11px] font-semibold w-full sm:w-max"
               >
-                {feature}
+                Purchase $50
+              </Link>
+              <button
+                className="flex items-center justify-center gap-2 px-[18px] py-[11px] rounded-2xl text-[#B9F500] hover:bg-[#B9F50033] font-bold w-full sm:w-max"
+                onClick={() => trackEvent("preview_demo_click")}
+              >
+                <Eye size={18} />
+                Preview Demo
+              </button>
+            </div>
+
+            {/* Stats */}
+            <div className="flex flex-wrap gap-2.5 bg-[#292A25] px-[9px] py-[20px] rounded-3xl text-sm font-medium">
+              <div className="flex items-center gap-2">
+                <Clock3 size={16} /> 23 Jul, 2025
               </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Tools & Categories */}
-        <div className="flex flex-col gap-10">
-          <div className="flex flex-col gap-4">
-            <h4 className="text-base font-semibold">Tools Used</h4>
-            <div className="flex gap-4 items-center">
-              {["reactjs", "tailwind", "javascript", "figmaa"].map((tool) => (
-                <Image
-                  key={tool}
-                  src={`/${tool}.svg`}
-                  alt={tool}
-                  width={31}
-                  height={31}
-                />
-              ))}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-8 text-sm text-[#B0B0B0]">
-            <div>
-              <h5 className="text-white font-semibold mb-4">Categories</h5>
-              {["Blockchain", "Web 3", "Cryptocurrency", "Memecoin"].map((cat) => (
-                <p key={cat} className="mb-2">{cat}</p>
-              ))}
+              <div className="flex items-center gap-2">
+                <GalleryHorizontal size={16} /> 8 pages
+              </div>
+              <div className="flex items-center gap-2">
+                <Eye size={16} /> 20k views
+              </div>
+              <div className="flex items-center gap-2">
+                <Smartphone size={16} /> Responsive
+              </div>
             </div>
 
-            <div>
-              <h5 className="text-white font-semibold mb-4">Pages</h5>
+            {/* Tools */}
+            <div className="flex flex-col gap-4 p-6 rounded-2xl bg-[#292A25]">
+              <h4 className="text-base font-semibold text-white">Tools Used</h4>
+              <div className="flex gap-4 items-center">
+                {["reactjs", "tailwind", "javascript", "figmaa"].map((tool) => (
+                  <Image
+                    key={tool}
+                    src={`/${tool}.svg`}
+                    alt={tool}
+                    width={31}
+                    height={31}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Categories */}
+            <div className="p-4 flex flex-col gap-4 text-sm text-[#B0B0B0] rounded-2xl bg-[#292A25]">
+              <h5 className="text-white font-semibold text-base">Categories</h5>
+              <div className="flex gap-4 flex-wrap">
+                <p>Blockchain</p>
+                <p>Web 3</p>
+                <p>CryptoCurrency</p>
+                <p>Memecoin</p>
+              </div>
+            </div>
+
+            {/* Features */}
+            <div className="flex flex-col gap-2">
+              <h4 className="text-2xl font-bold text-white">Features</h4>
               {[
-                "Home",
-                "(4 filter pages)",
-                "404",
-                "About",
-                "All works",
-                "CMS works pages",
-                "Contact"
-              ].map((page) => (
-                <p key={page} className="mb-2">{page}</p>
+                "400+ Exclusive Pre-Built Templates",
+                "Feature 1",
+                "Feature 2",
+                "Feature 3",
+                "Feature 4",
+              ].map((feature, idx) => (
+                <div
+                  key={idx}
+                  className="bg-[#292A25] py-2 px-4 rounded-lg text-sm font-medium"
+                >
+                  {feature}
+                </div>
               ))}
             </div>
           </div>
         </div>
-      </div>
 
-      <Separator className='bg-[#FEF9B514]'/>
+        <Separator className="bg-[#FEF9B514] h-[1px] w-full" />
 
-<div className="flex flex-col items-start justify-start gap-7">
-  <p className="text-white text-2xl sm:text-3xl md:text-4xl font-bold">Tutorial</p>
-  <div className="bg-[#292A25] rounded-2xl w-full h-[300px] sm:h-[500px] md:h-[692px] flex items-center justify-center">
-    <Image
-      src="/youtube.svg"
-      alt="play"
-      width={212}
-      height={150}
-      className="w-[50%] max-w-xs sm:w-1/3 md:w-1/4 h-auto"
-    />
-  </div>
-</div>
+        {/* More like this */}
+        <div className="flex flex-col gap-6 px-6 md:px-12 pb-10">
+          <h1 className="text-white font-bold text-2xl">More like this</h1>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
+            <TemplateCard />
+            <TemplateCard />
+            <TemplateCard />
+            <TemplateCard />
 
-
-      <div className='flex flex-col gap-[22px]'>
-        <h1 className='text-[#FFFFFF] font-bold text-[32px] text-left'>More like this</h1>
-        <div className="grid md:grid-cols-3 md:grid-rows-2 sm:grid-rows-1 gap-4">
-          <TemplateCard/>
-          <TemplateCard/>
-          <TemplateCard/>
-          <TemplateCard/>
-          <TemplateCard/>
-          <TemplateCard/>
+          </div>
         </div>
       </div>
-
     </div>
-  )
-}
+  );
+};
 
-export default PreviewPage
+export default PreviewPageModal;

@@ -62,7 +62,7 @@ export const metadata: Metadata = {
     title: "Bildare – UI Kits, Templates & Design Systems",
     description:
       "UI kits, templates & design systems for Web 2, Web 3, and AI apps. Built for designers & developers.",
-    creator: "@bildare", // Replace with your Twitter handle
+    creator: "@Bildare", // Replace with your Twitter handle
     images: ["/og-image.png"],
   },
   icons: {

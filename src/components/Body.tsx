@@ -19,6 +19,8 @@ import {
 } from "@/components/ui/dropdown-menu"; // ✅ dropdown
 import { useAuth } from "@/context/AuthContext";
 import Whatisnew from "./Whatisnew";
+import { useGoogleAnalytics } from "@/lib/useGoogleAnalytics";
+import PreviewPageModal from "@/app/preview/PreviewPage";
 
 
 
@@ -41,53 +43,62 @@ const FilterButton: React.FC<{ label: string }> = ({ label }) => (
   </button>
 );
 
-const TemplateCard = () => (
-  <Link href="/preview" className="flex flex-col justify-between bg-[#292a25] p-6 rounded-2xl md:h-[562px] h-[387px] w-full">
-    <div className="flex justify-between items-center">
-      <span className="flex items-center gap-2 text-sm font-medium text-white">
-        <Dot size={24} />
-        Template Name
-      </span>
-      <div className="bg-[#1C1D19] text-sm font-medium px-3 py-1.5 rounded-full">
-        Preview
-      </div>
-    </div>
+export const TemplateCard = () => {
+  const { trackEvent } = useGoogleAnalytics();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-    <div className="flex justify-between items-center">
-      <div className="flex items-center gap-3">
-        <Image src="/reactjs.svg" alt="React" width={18} height={18} />
-        <Image src="/tailwind.svg" alt="Tailwind" width={18} height={18} />
-        <Image src="/javascript.svg" alt="JS" width={18} height={18} />
-        <Image src="/figmaa.svg" alt="Figma" width={18} height={18} />
-      </div>
-      <p className="text-[#B9F500] font-semibold text-base">$50</p>
-    </div>
-  </Link>
-);
+  const handleOpenModal = () => {
+    trackEvent("template_card_click", { template: "Template Name" });
+    setIsModalOpen(true);
+  };
 
-const TemplateCard1 = () => (
-  <Link href="/preview" className="flex flex-col justify-between bg-[#292a25] p-6 rounded-2xl h-[387px] w-full">
-    <div className="flex justify-between items-center">
-      <span className="flex items-center gap-2 text-sm font-medium text-white">
-        <Dot size={24} />
-        Template Name
-      </span>
-      <div className="bg-[#1C1D19] text-sm font-medium px-3 py-1.5 rounded-full">
-        Preview
-      </div>
-    </div>
+  return (
+    <>
+      <div
+        onClick={handleOpenModal}
+        className="flex flex-col justify-between bg-[#292a25] p-4 sm:p-6 rounded-2xl w-full h-auto sm:h-[562px] cursor-pointer transition-transform hover:scale-[1.02]"
+      >
+        {/* Header */}
+        <div className="flex justify-between items-center mb-4">
+          <span className="flex items-center gap-2 text-xs sm:text-sm font-medium text-white">
+            <Dot size={20} className="sm:size-6" />
+            Template Name
+          </span>
+          <div className="bg-[#1C1D19] text-xs sm:text-sm font-medium px-2.5 sm:px-3 py-1.5 rounded-full">
+            Preview
+          </div>
+        </div>
 
-    <div className="flex justify-between items-center">
-      <div className="flex items-center gap-3">
-        <Image src="/reactjs.svg" alt="React" width={18} height={18} />
-        <Image src="/tailwind.svg" alt="Tailwind" width={18} height={18} />
-        <Image src="/javascript.svg" alt="JS" width={18} height={18} />
-        <Image src="/figmaa.svg" alt="Figma" width={18} height={18} />
+        {/* Preview Image */}
+        <div className="w-full h-[220px] sm:h-[433px] bg-[#C9C9C9] rounded-[16px] flex items-center justify-center overflow-hidden">
+          <Image
+            src="/template.png"
+            alt="Template"
+            width={394}
+            height={233}
+            className="object-contain w-full h-full"
+          />
+        </div>
+
+        {/* Footer */}
+        <div className="flex justify-between items-center mt-4">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Image src="/reactjs.svg" alt="React" width={16} height={16} />
+            <Image src="/tailwind.svg" alt="Tailwind" width={16} height={16} />
+            <Image src="/javascript.svg" alt="JS" width={16} height={16} />
+            <Image src="/figmaa.svg" alt="Figma" width={16} height={16} />
+          </div>
+          <p className="text-[#B9F500] font-semibold text-sm sm:text-base">$50</p>
+        </div>
       </div>
-      <p className="text-[#B9F500] font-semibold text-base">$50</p>
-    </div>
-  </Link>
-);
+
+      {/* Modal */}
+      {isModalOpen && (
+        <PreviewPageModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      )}
+    </>
+  );
+};
 
 const Body: React.FC = () => {
   const [openDropdown, setOpenDropdown] = useState<number | null>(null);
@@ -263,7 +274,7 @@ const Body: React.FC = () => {
           className="text-[#719500] text-2xl sm:text-3xl md:text-[40px] font-semibold"
           style={{ lineHeight: "120%", letterSpacing: "-0.08em" }}
         >
-          What&apos;s New on BILDARE?
+          What&apos;s New on Bildare?
         </h1>
         <p
           className="text-sm sm:text-base font-normal text-[#000000]"
@@ -323,15 +334,12 @@ const Body: React.FC = () => {
           <TemplateCard />
           <TemplateCard />
           <TemplateCard />
+          <TemplateCard />
+          <TemplateCard />
+          <TemplateCard />
+          <TemplateCard />
         </div>
-        <div className="grid md:grid-cols-3 md:grid-rows-2 gap-4">
-          <TemplateCard1 />
-          <TemplateCard1 />
-          <TemplateCard1 />
-          <TemplateCard1 />
-          <TemplateCard1 />
-          <TemplateCard1 />
-        </div>
+
       </div>
 
       {/* Footer */}
@@ -350,7 +358,7 @@ const Body: React.FC = () => {
           <p className="cursor-pointer hover:text-[#b9f500] hover:underline-offset-4 hover:underline ">Privacy</p>
         </div>
       </div>
-                 <div className="fixed bottom-16 right-10 z-50 flex flex-col items-end space-y-2">
+                 <div className="fixed bottom-16 right-10 0 flex flex-col items-end space-y-2">
         {isOpen && (
           <div className="p-4 rounded-2xl flex flex-col items-start justify-between bg-[#1C1D19] text-white w-64 shadow-xl">
             <button className="py-1 hover:text-[#B9F500]">Welcome to Bildare</button>
