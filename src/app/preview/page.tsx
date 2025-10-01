@@ -1,9 +1,9 @@
-import PreviewPage from "./PreviewPage";
+// import PreviewPageModal from "./PreviewPage";
 
-export const metadata = {
-  title: "Preview",
-};
+// export const metadata = {
+//   title: "Preview",
+// };
 
-export default function Page() {
-  return <PreviewPage />;
-}
+// export default function Page() {
+//   return <PreviewPageModal />;
+// }

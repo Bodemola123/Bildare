@@ -75,7 +75,7 @@ const CheckoutPage = () => {
       {/* Back link */}
       <div className="flex flex-wrap items-center gap-6">
         <Link
-          href="/preview"
+          href="/"
           className="bg-[#B9F50033] flex gap-2.5 px-[18px] py-[11px] rounded-2xl text-sm font-semibold text-[#B9F500]"
         >
           <Image src="/chevron-left.svg" alt="left-arrow" width={18} height={18} />
