@@ -71,13 +71,6 @@ export const TemplateCard = () => {
 
         {/* Preview Image */}
         <div className="w-full h-[220px] sm:h-[433px] bg-[#C9C9C9] rounded-[16px] flex items-center justify-center overflow-hidden">
-          <Image
-            src="/template.png"
-            alt="Template"
-            width={394}
-            height={233}
-            className="object-contain w-full h-full"
-          />
         </div>
 
         {/* Footer */}
