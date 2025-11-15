@@ -45,7 +45,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setIsLoading(true);
 
     try {
-      const res = await fetch("https://bildare-backend.onrender.com/me", {
+      const res = await fetch("https://bildare-backen.onrender.com/me", {
         method: "GET",
         credentials: "include",
       });
@@ -103,7 +103,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         });
       }
 
-      await fetch("https://bildare-backend.onrender.com/logout", {
+      await fetch("https://bildare-backen.onrender.com/logout", {
         method: "POST",
         credentials: "include",
       });

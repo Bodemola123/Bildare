@@ -35,7 +35,7 @@ const FeedbackPage = () => {
     trackEvent("feedback_form_submit_attempt", { page: "feedback" });
 
     try {
-      const res = await fetch("https://bildare-backend.onrender.com/contact", {
+      const res = await fetch("https://bildare-backen.onrender.com/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, subject, message }),

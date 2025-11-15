@@ -58,8 +58,8 @@ const AuthPage: React.FC<AuthPageProps> = ({ setCurrentSlide }) => {
 
     try {
       const endpoint = isSignUp
-        ? "https://bildare-backend.onrender.com/signup"
-        : "https://bildare-backend.onrender.com/login";
+        ? "https://bildare-backen.onrender.com/signup"
+        : "https://bildare-backen.onrender.com/login";
 
       const res = await fetch(endpoint, {
         method: "POST",
@@ -175,7 +175,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ setCurrentSlide }) => {
             onClick={() => {
               trackEvent("login", { method: "google" }); // Track Google login click
               window.location.href =
-                "https://bildare-backend.onrender.com/auth/google";
+                "https://bildare-backen.onrender.com/auth/google";
             }}
           >
             <Image src="/google.svg" alt="Google" width={20} height={20} />
@@ -185,7 +185,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ setCurrentSlide }) => {
             onClick={() => {
               trackEvent("login", { method: "github" }); // Track Google login click
               window.location.href =
-                "https://bildare-backend.onrender.com/auth/github";
+                "https://bildare-backen.onrender.com/auth/github";
             }}
           >
             <FaGithub className="text-xl"/>

@@ -12,7 +12,7 @@ declare global {
 }
 
 const GA_MEASUREMENT_ID = "G-Z9N49E2FSH";
-const GA_PROXY_ENDPOINT = "https://bildare-backend.onrender.com/analytics"; // your backend proxy
+const GA_PROXY_ENDPOINT = "https://bildare-backen.onrender.com/analytics"; // your backend proxy
 
 export const useGoogleAnalytics = () => {
   const pathname = usePathname();

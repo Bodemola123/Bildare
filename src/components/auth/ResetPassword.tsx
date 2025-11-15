@@ -37,7 +37,7 @@ const ResetPassword: React.FC<ResetPasswordProps> = ({ setCurrentSlide }) => {
 
     setLoading(true);
     try {
-      const endpoint = "https://bildare-backend.onrender.com/reset-password";
+      const endpoint = "https://bildare-backen.onrender.com/reset-password";
       const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

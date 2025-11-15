@@ -25,43 +25,47 @@ interface BasicInfoProps {
 }
 
 const BasicInfo: React.FC<BasicInfoProps> = ({ setCurrentSlide }) => {
-  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const [role, setRole] = useState("");
+  const [region, setRegion] = useState("");
+  const [interests, setInterests] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const { fetchSession } = useAuth(); // get from context
-  const { trackEvent } = useGoogleAnalytics(); // GA tracker
+  const { fetchSession } = useAuth();
+  const { trackEvent } = useGoogleAnalytics();
 
   const handleContinue = async () => {
-    if (!name || !role) return toast("Please fill in all fields");
+    if (!username || !role || !region) return toast("Please fill in all required fields");
 
     const email = localStorage.getItem("signupEmail");
     if (!email) return toast("Missing email");
 
     setLoading(true);
     try {
-      const endpoint = "https://bildare-backend.onrender.com/complete-profile";
+      const endpoint = "https://bildare-backen.onrender.com/complete-profile";
 
       const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ email, name, role }),
+        body: JSON.stringify({
+          email,
+          username,
+          role,
+          region,
+          interests: interests.split(",").map((i) => i.trim()), // convert comma-separated to array
+        }),
       });
 
       const data = await res.json().catch(() => ({}));
 
       if (res.ok) {
-        // ✅ Update AuthContext from server session
         await fetchSession();
-
         toast("Profile completed successfully!");
         setCurrentSlide("signupSuccess");
 
-        // ✅ GA tracking
-        trackEvent("profile_completed", { role });
+        trackEvent("profile_completed", { role, region });
 
-        // Cleanup temporary localStorage
         localStorage.removeItem("signupEmail");
         localStorage.removeItem("signupPassword");
       } else {
@@ -77,12 +81,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ setCurrentSlide }) => {
 
   return (
     <div className="flex justify-center items-center min-h-screen px-4">
-      <div
-        className="bg-[#292A25] rounded-[20px] md:rounded-[29px] 
-        p-6 md:p-10 w-full max-w-full md:max-w-[665px] 
-        h-auto md:max-h-[600px] 
-        flex flex-col items-center"
-      >
+      <div className="bg-[#292A25] rounded-[20px] md:rounded-[29px] p-6 md:p-10 w-full max-w-full md:max-w-[665px] h-auto md:max-h-[600px] flex flex-col items-center">
         <RiInfoCardLine className="text-[5rem] md:text-[7rem] text-white" />
         <h2 className="text-xl md:text-2xl font-medium text-center mt-4 md:mt-5 text-[#f4f4f4]">
           Basic Info
@@ -92,13 +91,13 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ setCurrentSlide }) => {
         </p>
 
         <form className="flex flex-col gap-5 w-full mt-6">
-          {/* Name */}
+          {/* Username */}
           <div className="grid w-full gap-2">
-            <Label htmlFor="name">Name</Label>
+            <Label htmlFor="username">Name</Label>
             <div className="relative">
               <Input
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 placeholder="John Doe"
                 className="pl-10 h-[56px] bg-[#1C1D19] text-white rounded-2xl placeholder:text-[#757575]"
               />
@@ -113,24 +112,13 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ setCurrentSlide }) => {
               value={role}
               onValueChange={(value) => {
                 setRole(value);
-                // ✅ Track role selection
                 trackEvent("role_selected", { role: value });
               }}
             >
-              <SelectTrigger
-                className="
-                  !h-[56px] py-0
-                  bg-[#1C1D19] text-white rounded-2xl px-4
-                  text-base placeholder:text-[#757575] w-full
-                "
-              >
+              <SelectTrigger className="!h-[56px] py-0 bg-[#1C1D19] text-white rounded-2xl px-4 text-base placeholder:text-[#757575] w-full">
                 <SelectValue placeholder="Select a Role" />
               </SelectTrigger>
-
-              <SelectContent
-                className="bg-[#292A25] text-white rounded-xl
-                           min-w-[var(--radix-select-trigger-width)]"
-              >
+              <SelectContent className="bg-[#292A25] text-white rounded-xl min-w-[var(--radix-select-trigger-width)]">
                 <SelectGroup>
                   <SelectLabel className="text-[#B9F500]">Roles</SelectLabel>
                   <SelectItem value="Developer">Developer</SelectItem>
@@ -140,21 +128,36 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ setCurrentSlide }) => {
               </SelectContent>
             </Select>
           </div>
+
+          {/* Region */}
+          <div className="grid w-full gap-2">
+            <Label htmlFor="region">Region</Label>
+            <Input
+              value={region}
+              onChange={(e) => setRegion(e.target.value)}
+              placeholder="e.g. Lagos, Nigeria"
+              className="h-[56px] bg-[#1C1D19] text-white rounded-2xl placeholder:text-[#757575]"
+            />
+          </div>
+
+          {/* Interests */}
+          <div className="grid w-full gap-2">
+            <Label htmlFor="interests">Interests (comma separated)</Label>
+            <Input
+              value={interests}
+              onChange={(e) => setInterests(e.target.value)}
+              placeholder="Design, React, AI"
+              className="h-[56px] bg-[#1C1D19] text-white rounded-2xl placeholder:text-[#757575]"
+            />
+          </div>
         </form>
 
-        {/* Continue button */}
         <Button
           onClick={handleContinue}
-          className="bg-[#B9F500] w-full h-[48px] md:h-[51px] 
-            mt-6 text-center rounded-2xl text-[#000000] font-bold 
-            text-sm md:text-base flex justify-center items-center gap-2"
+          className="bg-[#B9F500] w-full h-[48px] md:h-[51px] mt-6 text-center rounded-2xl text-[#000000] font-bold text-sm md:text-base flex justify-center items-center gap-2"
           disabled={loading}
         >
-          {loading ? (
-            <AiOutlineLoading3Quarters className="animate-spin text-black" />
-          ) : (
-            "Continue"
-          )}
+          {loading ? <AiOutlineLoading3Quarters className="animate-spin text-black" /> : "Continue"}
         </Button>
       </div>
     </div>
