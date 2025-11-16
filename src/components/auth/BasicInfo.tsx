@@ -42,7 +42,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ setCurrentSlide }) => {
 
     setLoading(true);
     try {
-      const endpoint = "https://bildare-backen.onrender.com/complete-profile";
+      const endpoint = "https://bildare-backend.onrender.com/complete-profile";
 
       const res = await fetch(endpoint, {
         method: "POST",
