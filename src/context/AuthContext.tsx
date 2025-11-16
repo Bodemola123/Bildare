@@ -8,14 +8,27 @@ import React, {
   useRef,
   ReactNode,
 } from "react";
-import { useGoogleAnalytics } from "@/lib/useGoogleAnalytics"; // ✅ import GA hook
+import { useGoogleAnalytics } from "@/lib/useGoogleAnalytics";
+
+interface UserProfile {
+  profile_id: number;
+  first_name: string | null;
+  last_name: string | null;
+  bio: string | null;
+  avatar_url: string | null;
+  created_at: string;
+  updated_at: string;
+  user_id: number;
+}
 
 interface AuthContextType {
-  userId: string | null;
-  name: string | null;
+  userId: number | null;
+  username: string | null;
   role: string | null;
   email: string | null;
-  otp: string | null;
+  accessToken: string | null;
+  refreshToken: string | null;
+  profile: UserProfile | null;
   isLoading: boolean;
   fadeOut: boolean;
   fetchSession: () => Promise<void>;
@@ -25,15 +38,17 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [userId, setUserId] = useState<string | null>(null);
-  const [name, setName] = useState<string | null>(null);
+  const [userId, setUserId] = useState<number | null>(null);
+  const [username, setUsername] = useState<string | null>(null);
   const [role, setRole] = useState<string | null>(null);
   const [email, setEmail] = useState<string | null>(null);
-  const [otp, setOtpState] = useState<string | null>(null);
+  const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [refreshToken, setRefreshToken] = useState<string | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [fadeOut, setFadeOut] = useState(false);
 
-  const { trackEvent } = useGoogleAnalytics(); // ✅ GA tracker
+  const { trackEvent } = useGoogleAnalytics();
 
   const hasFetchedRef = useRef(false);
   const redirectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -43,7 +58,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     hasFetchedRef.current = true;
 
     setIsLoading(true);
-
     try {
       const res = await fetch("https://bildare-backend.onrender.com/me", {
         method: "GET",
@@ -52,25 +66,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       if (res.ok) {
         const data = await res.json();
-        setUserId(data.id ?? null);
-        setName(data.name ?? null);
+
+        setUserId(data.user_id ?? null);
+        setUsername(data.username ?? null);
         setRole(data.role ?? null);
         setEmail(data.email ?? null);
+        setAccessToken(data.accessToken ?? null);
+        setRefreshToken(data.refreshToken ?? null);
+        setProfile(data.profile ?? null);
 
-        // ✅ Automatically track login success
-        if (data.id) {
+        if (data.user_id) {
           trackEvent("login_success", {
-            user_id: data.id,
+            user_id: data.user_id,
+            username: data.username,
             role: data.role,
             email: data.email,
           });
         }
 
-        // Redirect if user is on /auth
-        if (
-          typeof window !== "undefined" &&
-          window.location.pathname === "/auth"
-        ) {
+        // Redirect away from /auth after login
+        if (typeof window !== "undefined" && window.location.pathname === "/auth") {
           setFadeOut(true);
           redirectTimeoutRef.current = setTimeout(() => {
             window.location.href = "/";
@@ -94,10 +109,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const clearAuth = async (redirect: boolean = true) => {
     try {
-      // ✅ Fire logout event before clearing user
       if (userId) {
         trackEvent("logout", {
           user_id: userId,
+          username,
           role,
           email,
         });
@@ -111,10 +126,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       console.error("❌ Logout request failed:", err);
     } finally {
       setUserId(null);
-      setName(null);
+      setUsername(null);
       setRole(null);
       setEmail(null);
-      setOtpState(null);
+      setAccessToken(null);
+      setRefreshToken(null);
+      setProfile(null);
       hasFetchedRef.current = false;
 
       if (redirect) {
@@ -134,10 +151,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     <AuthContext.Provider
       value={{
         userId,
-        name,
+        username,
         role,
         email,
-        otp,
+        accessToken,
+        refreshToken,
+        profile,
         isLoading,
         fadeOut,
         fetchSession,
@@ -151,21 +170,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-
-  // If no provider, return a "safe fallback"
   if (!context) {
     return {
       userId: null,
-      name: null,
+      username: null,
       role: null,
       email: null,
-      otp: null,
+      accessToken: null,
+      refreshToken: null,
+      profile: null,
       isLoading: false,
       fadeOut: false,
       fetchSession: async () => {},
       clearAuth: () => {},
     } satisfies AuthContextType;
   }
-
   return context;
 };

@@ -60,7 +60,7 @@ const Card: React.FC<CardProps> = ({ title, subtitle, date, icon }) => {
 
 const NewAdditions = () => {
   const [isOpen, setIsOpen] = useState(false)
-  const { name, clearAuth } = useAuth()
+  const { username, clearAuth } = useAuth()
   const { trackEvent } = useGoogleAnalytics()
 
   // derive initials
@@ -91,7 +91,7 @@ const NewAdditions = () => {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Avatar className="cursor-pointer !w-10 !h-10">
-              <AvatarFallback>{getInitials(name)}</AvatarFallback>
+              <AvatarFallback>{getInitials(username)}</AvatarFallback>
             </Avatar>
           </DropdownMenuTrigger>
           <DropdownMenuContent

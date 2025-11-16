@@ -25,17 +25,25 @@ interface BasicInfoProps {
 }
 
 const BasicInfo: React.FC<BasicInfoProps> = ({ setCurrentSlide }) => {
+  // Required fields
   const [username, setUsername] = useState("");
   const [role, setRole] = useState("");
-  const [region, setRegion] = useState("");
+
+  // Optional fields
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [bio, setBio] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState("");
   const [interests, setInterests] = useState("");
+
   const [loading, setLoading] = useState(false);
 
   const { fetchSession } = useAuth();
   const { trackEvent } = useGoogleAnalytics();
 
   const handleContinue = async () => {
-    if (!username || !role || !region) return toast("Please fill in all required fields");
+    // Validate required fields
+    if (!username || !role) return toast("Please fill in all required fields");
 
     const email = localStorage.getItem("signupEmail");
     if (!email) return toast("Missing email");
@@ -52,8 +60,11 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ setCurrentSlide }) => {
           email,
           username,
           role,
-          region,
-          interests: interests.split(",").map((i) => i.trim()), // convert comma-separated to array
+          first_name: firstName || null,
+          last_name: lastName || null,
+          bio: bio || null,
+          avatar_url: avatarUrl || null,
+          interests: interests ? interests.split(",").map((i) => i.trim()) : [],
         }),
       });
 
@@ -64,8 +75,9 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ setCurrentSlide }) => {
         toast("Profile completed successfully!");
         setCurrentSlide("signupSuccess");
 
-        trackEvent("profile_completed", { role, region });
+        trackEvent("profile_completed", { role });
 
+        // Clean up
         localStorage.removeItem("signupEmail");
         localStorage.removeItem("signupPassword");
       } else {
@@ -81,24 +93,24 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ setCurrentSlide }) => {
 
   return (
     <div className="flex justify-center items-center min-h-screen px-4">
-      <div className="bg-[#292A25] rounded-[20px] md:rounded-[29px] p-6 md:p-10 w-full max-w-full md:max-w-[665px] h-auto md:max-h-[600px] flex flex-col items-center">
+      <div className="bg-[#292A25] rounded-[20px] md:rounded-[29px] p-6 md:p-10 w-full max-w-full md:max-w-[665px] h-auto md:max-h-[700px] flex flex-col items-center overflow-y-auto">
         <RiInfoCardLine className="text-[5rem] md:text-[7rem] text-white" />
         <h2 className="text-xl md:text-2xl font-medium text-center mt-4 md:mt-5 text-[#f4f4f4]">
-          Basic Info
+          Complete Your Profile
         </h2>
         <p className="text-sm md:text-base text-center mt-2 text-[#f4f4f4] px-3 md:px-0">
-          Kindly provide us with the following info
+          Kindly provide the required information to complete your profile
         </p>
 
         <form className="flex flex-col gap-5 w-full mt-6">
           {/* Username */}
           <div className="grid w-full gap-2">
-            <Label htmlFor="username">Name</Label>
+            <Label htmlFor="username">Username *</Label>
             <div className="relative">
               <Input
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="John Doe"
+                placeholder="JohnDoe"
                 className="pl-10 h-[56px] bg-[#1C1D19] text-white rounded-2xl placeholder:text-[#757575]"
               />
               <UserRound className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-[#757575]" />
@@ -107,7 +119,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ setCurrentSlide }) => {
 
           {/* Role */}
           <div className="grid w-full gap-2">
-            <Label htmlFor="role">Role</Label>
+            <Label htmlFor="role">Role *</Label>
             <Select
               value={role}
               onValueChange={(value) => {
@@ -129,18 +141,47 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ setCurrentSlide }) => {
             </Select>
           </div>
 
-          {/* Region */}
+          {/* Optional fields */}
           <div className="grid w-full gap-2">
-            <Label htmlFor="region">Region</Label>
+            <Label htmlFor="firstName">First Name</Label>
             <Input
-              value={region}
-              onChange={(e) => setRegion(e.target.value)}
-              placeholder="e.g. Lagos, Nigeria"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              placeholder="John"
               className="h-[56px] bg-[#1C1D19] text-white rounded-2xl placeholder:text-[#757575]"
             />
           </div>
 
-          {/* Interests */}
+          <div className="grid w-full gap-2">
+            <Label htmlFor="lastName">Last Name</Label>
+            <Input
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              placeholder="Doe"
+              className="h-[56px] bg-[#1C1D19] text-white rounded-2xl placeholder:text-[#757575]"
+            />
+          </div>
+
+          <div className="grid w-full gap-2">
+            <Label htmlFor="bio">Bio</Label>
+            <Input
+              value={bio}
+              onChange={(e) => setBio(e.target.value)}
+              placeholder="Tell us about yourself"
+              className="h-[56px] bg-[#1C1D19] text-white rounded-2xl placeholder:text-[#757575]"
+            />
+          </div>
+
+          <div className="grid w-full gap-2">
+            <Label htmlFor="avatarUrl">Avatar URL</Label>
+            <Input
+              value={avatarUrl}
+              onChange={(e) => setAvatarUrl(e.target.value)}
+              placeholder="https://example.com/avatar.jpg"
+              className="h-[56px] bg-[#1C1D19] text-white rounded-2xl placeholder:text-[#757575]"
+            />
+          </div>
+
           <div className="grid w-full gap-2">
             <Label htmlFor="interests">Interests (comma separated)</Label>
             <Input

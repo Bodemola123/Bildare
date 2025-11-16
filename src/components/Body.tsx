@@ -98,7 +98,7 @@ const Body: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
     const [isOpen, setIsOpen] = useState(false);
       const [isModalOpen, setIsModalOpen] = useState(false);
-      const { name, email, clearAuth, fetchSession } = useAuth();
+      const { username, email, clearAuth, fetchSession } = useAuth();
     
       useEffect(() => {
         // Automatically fetch session on component mount
@@ -108,7 +108,7 @@ const Body: React.FC = () => {
       const openModal = () => setIsModalOpen(true);
       const closeModal = () => setIsModalOpen(false);
     
-      const isAuthenticated = !!name; // if name exists, user is logged in
+      const isAuthenticated = !!username; // if name exists, user is logged in
 
     
   
@@ -197,7 +197,7 @@ const Body: React.FC = () => {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Avatar className="cursor-pointer">
-                <AvatarFallback>{getInitials(name)}</AvatarFallback>
+                <AvatarFallback>{getInitials(username)}</AvatarFallback>
               </Avatar>
             </DropdownMenuTrigger>
                 <DropdownMenuContent

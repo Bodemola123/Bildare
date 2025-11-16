@@ -24,7 +24,7 @@ import { toast } from "sonner"; // optional toast for errors
 
 const CheckoutPage = () => {
   const [date, setDate] = useState<Date | undefined>();
-  const { name, email, clearAuth } = useAuth();
+  const { username, email, clearAuth } = useAuth();
   const [loading, setLoading] = useState(false);
 
 
@@ -43,7 +43,7 @@ const CheckoutPage = () => {
         <h1 className="text-2xl font-bold">CHECKOUT</h1>
 
         {/* Auth conditional */}
-        {!name ? (
+        {!username ? (
           <Button
             variant="ghost"
             className="px-6 py-3 rounded-2xl text-[#B9F500] font-semibold"
@@ -54,7 +54,7 @@ const CheckoutPage = () => {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Avatar className="cursor-pointer !w-10 !h-10">
-                <AvatarFallback>{getInitials(name)}</AvatarFallback>
+                <AvatarFallback>{getInitials(username)}</AvatarFallback>
               </Avatar>
             </DropdownMenuTrigger>
                 <DropdownMenuContent

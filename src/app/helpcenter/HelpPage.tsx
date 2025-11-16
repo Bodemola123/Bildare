@@ -15,7 +15,7 @@ export const metadata = {
 };
 
 const HelpPage = () => {
-  const { name, clearAuth } = useAuth();
+  const { username, clearAuth } = useAuth();
   const { trackEvent } = useGoogleAnalytics();
 
   // derive initials
@@ -33,7 +33,7 @@ const HelpPage = () => {
       <div className="flex flex-row items-center justify-between gap-4">
         <h1 className="text-2xl sm:text-3xl font-bold">Help Center</h1>
         {/* ✅ Auth conditional */}
-        {!name ? (
+        {!username ? (
           <Button
             variant="ghost"
             className="px-6 py-3 rounded-2xl text-[#B9F500] font-semibold"
@@ -45,7 +45,7 @@ const HelpPage = () => {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Avatar className="cursor-pointer">
-                <AvatarFallback>{getInitials(name)}</AvatarFallback>
+                <AvatarFallback>{getInitials(username)}</AvatarFallback>
               </Avatar>
             </DropdownMenuTrigger>
             <DropdownMenuContent
