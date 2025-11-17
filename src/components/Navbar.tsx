@@ -38,7 +38,7 @@ const NavItem: React.FC<NavItemProps> = ({ icon, label, href = "/#", onClick }) 
 
 const Navbar: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { name, fetchSession } = useAuth(); 
+  const { username, fetchSession } = useAuth(); 
   const { trackEvent } = useGoogleAnalytics();
 
   useEffect(() => {
@@ -51,7 +51,7 @@ const Navbar: React.FC = () => {
   };
   const closeModal = () => setIsModalOpen(false);
 
-  const isAuthenticated = !!name; 
+  const isAuthenticated = !!username; 
 
   return (
     <>

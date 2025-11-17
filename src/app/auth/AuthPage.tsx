@@ -74,7 +74,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ setCurrentSlide }) => {
       if (!isSignUp) {
         await fetchSession();
         setCurrentSlide("signinSuccess");
-        toast.success(`Welcome back, ${data.name || "user"}!`);
+        toast.success(`Welcome back, ${data.username || "user"}!`);
 
         // Track login
         trackEvent("login", { method: "email" });

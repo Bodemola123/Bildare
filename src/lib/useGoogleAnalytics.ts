@@ -25,7 +25,7 @@ export const useGoogleAnalytics = () => {
   })();
 
   const userId = auth?.userId ?? null;
-  const userName = auth?.name ?? null;
+  const userName = auth?.username ?? null;
 
   // Helper to send events via gtag (client-side)
   const sendGtag = (command: string, ...params: any[]) => {
