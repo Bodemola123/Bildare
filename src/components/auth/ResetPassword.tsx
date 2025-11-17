@@ -30,6 +30,7 @@ const ResetPassword: React.FC<ResetPasswordProps> = ({ setCurrentSlide }) => {
       return toast("Passwords do not match");
     }
 
+    
     const email = localStorage.getItem("forgotPasswordEmail"); 
     const token = localStorage.getItem("resetToken"); 
 
