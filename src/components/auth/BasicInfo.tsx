@@ -35,22 +35,83 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ setCurrentSlide }) => {
   const [bio, setBio] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
   const [interests, setInterests] = useState("");
+  const [twitter, setTwitter] = useState("");
+  const [linkedin, setLinkedin] = useState("");
+  const [github, setGithub] = useState("");
+  const [referralCode, setReferralCode] = useState("");
 
   const [loading, setLoading] = useState(false);
+
+  // Validation states
+  const [errors, setErrors] = useState<{
+    username?: string;
+    role?: string;
+    avatarUrl?: string;
+    twitter?: string;
+    linkedin?: string;
+    github?: string;
+  }>({});
 
   const { fetchSession } = useAuth();
   const { trackEvent } = useGoogleAnalytics();
 
-  const handleContinue = async () => {
-    // Validate required fields
-    if (!username || !role) return toast("Please fill in all required fields");
+  const isValidUrl = (url: string) => {
+    try {
+      if (!url) return false;
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
+  };
 
+  const handleContinue = async () => {
     const email = localStorage.getItem("signupEmail");
-    if (!email) return toast("Missing email");
+    const password = localStorage.getItem("signupPassword");
+
+    const newErrors: typeof errors = {};
+
+    if (!username.trim()) newErrors.username = "Username is required";
+    if (!role.trim()) newErrors.role = "Role is required";
+    if (avatarUrl && !isValidUrl(avatarUrl)) newErrors.avatarUrl = "Invalid URL";
+    if (twitter && !isValidUrl(twitter)) newErrors.twitter = "Invalid URL";
+    if (linkedin && !isValidUrl(linkedin)) newErrors.linkedin = "Invalid URL";
+    if (github && !isValidUrl(github)) newErrors.github = "Invalid URL";
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length > 0) {
+      toast("Please fix the highlighted errors");
+      return;
+    }
+
+    if (!email || !password) {
+      toast("Missing signup email or password");
+      return;
+    }
 
     setLoading(true);
+
     try {
       const endpoint = "https://bildare-backend.onrender.com/complete-profile";
+
+      const cleanUsername = username.trim().toLowerCase();
+      const cleanRole = role.trim();
+const cleanFirstName = firstName.trim() || null;
+const cleanLastName = lastName.trim() || null;
+const cleanBio = bio.trim() || null;
+
+
+      const cleanInterests = interests
+        .split(",")
+        .map((i) => i.trim())
+        .filter((i) => i);
+
+const socialLinks: { twitter?: string; linkedin?: string; github?: string } = {};
+if (twitter?.trim()) socialLinks.twitter = twitter.trim();
+if (linkedin?.trim()) socialLinks.linkedin = linkedin.trim();
+if (github?.trim()) socialLinks.github = github.trim();
+
 
       const res = await fetch(endpoint, {
         method: "POST",
@@ -58,28 +119,29 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ setCurrentSlide }) => {
         credentials: "include",
         body: JSON.stringify({
           email,
-          username,
-          role,
-          first_name: firstName || null,
-          last_name: lastName || null,
-          bio: bio || null,
-          avatar_url: avatarUrl || null,
-          interests: interests ? interests.split(",").map((i) => i.trim()) : [],
+          password,
+          username: cleanUsername,
+          role: cleanRole,
+          first_name: cleanFirstName,
+          last_name: cleanLastName,
+          bio: cleanBio,
+          avatar_url: avatarUrl,
+          interests: cleanInterests,
+          social_links: Object.keys(socialLinks).length ? socialLinks : null,
+          referralCode: referralCode.trim() || null,
         }),
       });
 
       const data = await res.json().catch(() => ({}));
 
       if (res.ok) {
+        localStorage.setItem("signupEmail", email);
+        localStorage.setItem("signupPassword", password);
+
         await fetchSession();
         toast("Profile completed successfully!");
         setCurrentSlide("signupSuccess");
-
-        trackEvent("profile_completed", { role });
-
-        // Clean up
-        localStorage.removeItem("signupEmail");
-        localStorage.removeItem("signupPassword");
+        trackEvent("profile_completed", { role: cleanRole });
       } else {
         toast(data.error || `Error ${res.status}: Failed to submit info`);
       }
@@ -90,6 +152,11 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ setCurrentSlide }) => {
       setLoading(false);
     }
   };
+
+  const inputClass = (error?: string) =>
+    `h-[56px] bg-[#1C1D19] text-white rounded-2xl placeholder:text-[#757575] ${
+      error ? "border-2 border-red-500" : ""
+    }`;
 
   return (
     <div className="flex justify-center items-center min-h-screen px-4">
@@ -111,10 +178,11 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ setCurrentSlide }) => {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="JohnDoe"
-                className="pl-10 h-[56px] bg-[#1C1D19] text-white rounded-2xl placeholder:text-[#757575]"
+                className={inputClass(errors.username)}
               />
               <UserRound className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-[#757575]" />
             </div>
+            {errors.username && <p className="text-red-500 text-sm">{errors.username}</p>}
           </div>
 
           {/* Role */}
@@ -127,7 +195,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ setCurrentSlide }) => {
                 trackEvent("role_selected", { role: value });
               }}
             >
-              <SelectTrigger className="!h-[56px] py-0 bg-[#1C1D19] text-white rounded-2xl px-4 text-base placeholder:text-[#757575] w-full">
+              <SelectTrigger className={inputClass(errors.role)}>
                 <SelectValue placeholder="Select a Role" />
               </SelectTrigger>
               <SelectContent className="bg-[#292A25] text-white rounded-xl min-w-[var(--radix-select-trigger-width)]">
@@ -139,6 +207,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ setCurrentSlide }) => {
                 </SelectGroup>
               </SelectContent>
             </Select>
+            {errors.role && <p className="text-red-500 text-sm">{errors.role}</p>}
           </div>
 
           {/* Optional fields */}
@@ -148,7 +217,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ setCurrentSlide }) => {
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
               placeholder="John"
-              className="h-[56px] bg-[#1C1D19] text-white rounded-2xl placeholder:text-[#757575]"
+              className={inputClass()}
             />
           </div>
 
@@ -158,7 +227,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ setCurrentSlide }) => {
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
               placeholder="Doe"
-              className="h-[56px] bg-[#1C1D19] text-white rounded-2xl placeholder:text-[#757575]"
+              className={inputClass()}
             />
           </div>
 
@@ -168,7 +237,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ setCurrentSlide }) => {
               value={bio}
               onChange={(e) => setBio(e.target.value)}
               placeholder="Tell us about yourself"
-              className="h-[56px] bg-[#1C1D19] text-white rounded-2xl placeholder:text-[#757575]"
+              className={inputClass()}
             />
           </div>
 
@@ -178,8 +247,9 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ setCurrentSlide }) => {
               value={avatarUrl}
               onChange={(e) => setAvatarUrl(e.target.value)}
               placeholder="https://example.com/avatar.jpg"
-              className="h-[56px] bg-[#1C1D19] text-white rounded-2xl placeholder:text-[#757575]"
+              className={inputClass(errors.avatarUrl)}
             />
+            {errors.avatarUrl && <p className="text-red-500 text-sm">{errors.avatarUrl}</p>}
           </div>
 
           <div className="grid w-full gap-2">
@@ -188,7 +258,35 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ setCurrentSlide }) => {
               value={interests}
               onChange={(e) => setInterests(e.target.value)}
               placeholder="Design, React, AI"
-              className="h-[56px] bg-[#1C1D19] text-white rounded-2xl placeholder:text-[#757575]"
+              className={inputClass()}
+            />
+          </div>
+
+          {/* Social links */}
+          {[
+            { label: "Twitter", value: twitter, setter: setTwitter, error: errors.twitter },
+            { label: "LinkedIn", value: linkedin, setter: setLinkedin, error: errors.linkedin },
+            { label: "GitHub", value: github, setter: setGithub, error: errors.github },
+          ].map((field) => (
+            <div key={field.label} className="grid w-full gap-2">
+              <Label htmlFor={field.label}>{field.label}</Label>
+              <Input
+                value={field.value}
+                onChange={(e) => field.setter(e.target.value)}
+                placeholder={`https://${field.label.toLowerCase()}.com/username`}
+                className={inputClass(field.error)}
+              />
+              {field.error && <p className="text-red-500 text-sm">{field.error}</p>}
+            </div>
+          ))}
+
+          <div className="grid w-full gap-2">
+            <Label htmlFor="referralCode">Referral Code</Label>
+            <Input
+              value={referralCode}
+              onChange={(e) => setReferralCode(e.target.value)}
+              placeholder="ABCD1234"
+              className={inputClass()}
             />
           </div>
         </form>
