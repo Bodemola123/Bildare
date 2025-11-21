@@ -93,7 +93,7 @@ const EmailVerify: React.FC<EmailVerifyProps> = ({ setCurrentSlide }) => {
       const password = localStorage.getItem("signupPassword");
       if (!email) return toast("Email not found. Please sign up again.");
 
-      const endpoint = "https://bildare-backend.onrender.com/signup";
+      const endpoint = "https://bildare-backend.onrender.com/resend-otp";
 
       const res = await fetch(endpoint, {
         method: "POST",
