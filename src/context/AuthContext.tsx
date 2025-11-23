@@ -67,6 +67,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (res.ok) {
         const data = await res.json();
 
+        console.log("User info is:", data)
+
         setUserId(data.user_id ?? null);
         setUsername(data.username ?? null);
         setRole(data.role ?? null);
