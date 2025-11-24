@@ -119,7 +119,6 @@ if (github?.trim()) socialLinks.github = github.trim();
         credentials: "include",
         body: JSON.stringify({
           email,
-          password,
           username: cleanUsername,
           role: cleanRole,
           first_name: cleanFirstName,
