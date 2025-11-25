@@ -257,7 +257,7 @@ const Body: React.FC = () => {
 <div className="flex flex-col md:flex-row gap-4 justify-center items-center w-full">
   {/* What's New Card */}
   <div
-    className="flex flex-col md:flex-row items-center justify-between gap-[17px] bg-[#F8FEE6] bg-no-repeat bg-right w-full rounded-2xl p-6 sm:p-9"
+    className="flex flex-col md:flex-row items-center justify-between gap-[17px] bg-[#F8FEE6] bg-no-repeat bg-right w-full rounded-2xl p-6  h-auto md:h-[207px]"
     style={{ backgroundImage: "url('/Vector1.svg')" }}
   >
     {/* Text + Button */}
@@ -314,7 +314,7 @@ const Body: React.FC = () => {
     alt="banner"
     width={325}
     height={207}
-    className="w-full md:w-1/3 sm:h-auto lg:h-auto md:h-[207px]  rounded-2xl"
+    className="w-full md:w-1/3 h-auto md:h-[207px]  rounded-2xl"
   />
 </div>
 
