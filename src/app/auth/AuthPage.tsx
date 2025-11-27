@@ -32,21 +32,34 @@ const AuthPage: React.FC<AuthPageProps> = ({ setCurrentSlide }) => {
  const { trackEvent } = useGoogleAnalytics();
 
   // ✅ Auto-check session on mount (fade-out handled in AuthProvider)
-  useEffect(() => {
-    let timeout: NodeJS.Timeout;
-    const check = async () => {
-      try {
-        await fetchSession(); // single fetch, may redirect if logged in
-      } catch (err) {
-        toast.error("Unable to verify session. Please try again.");
-      } finally {
-        // wait for AuthProvider's fadeOut to complete before showing form
-        timeout = setTimeout(() => setCheckingSession(false), 400);
-      }
-    };
-    check();
-    return () => clearTimeout(timeout); // prevent memory leaks
-  }, [fetchSession]);
+useEffect(() => {
+  const pathname = window.location.pathname;
+
+  // ❌ If you're on /auth, do NOT fetch session again
+  if (pathname === "/auth") {
+    setCheckingSession(false);
+    return;
+  }
+
+  // ✅ If you're NOT on /auth, run normal session check
+  let timeout: NodeJS.Timeout;
+
+  const check = async () => {
+    try {
+      await fetchSession(); 
+    } finally {
+      // Wait for fadeOut only if it is actually happening
+      timeout = setTimeout(() => {
+        setCheckingSession(false);
+      }, fadeOut ? 400 : 0);
+    }
+  };
+
+  check();
+
+  return () => clearTimeout(timeout);
+}, [fetchSession, fadeOut]);
+
 
   const handleSubmit = async () => {
     if (!email || !password) {
