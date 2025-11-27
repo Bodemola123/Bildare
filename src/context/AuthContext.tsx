@@ -9,6 +9,7 @@ import React, {
   ReactNode,
 } from "react";
 import { useGoogleAnalytics } from "@/lib/useGoogleAnalytics";
+import { useRouter } from "next/navigation";
 
 interface UserProfile {
   profile_id: number;
@@ -29,7 +30,7 @@ interface AuthContextType {
   accessToken: string | null;
   refreshToken: string | null;
   profile: UserProfile | null;
-  interests: string[];  
+  interests: string[];
   isLoading: boolean;
   fadeOut: boolean;
   fetchSession: () => Promise<void>;
@@ -46,19 +47,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [interests, setInterests] = useState<string[]>([]);
-
+  const [isLoading, setIsLoading] = useState(true);
   const [fadeOut, setFadeOut] = useState(false);
 
   const { trackEvent } = useGoogleAnalytics();
+  const router = useRouter();
 
-  const hasFetchedRef = useRef(false);
+  const isFetchingRef = useRef(false);
   const redirectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const fetchSession = async () => {
-    if (hasFetchedRef.current) return;
-    hasFetchedRef.current = true;
+    if (isFetchingRef.current) return;
+    isFetchingRef.current = true;
 
     setIsLoading(true);
     try {
@@ -69,8 +70,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       if (res.ok) {
         const data = await res.json();
-
-        console.log("User info is:", data)
+        console.log("User info is:", data);
 
         setUserId(data.user_id ?? null);
         setInterests(data.interests ?? []);
@@ -94,7 +94,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (typeof window !== "undefined" && window.location.pathname === "/auth") {
           setFadeOut(true);
           redirectTimeoutRef.current = setTimeout(() => {
-            window.location.href = "/";
+            router.replace("/"); // SPA-style redirect
           }, 300);
         }
       } else if (res.status === 401) {
@@ -109,6 +109,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       console.error("❌ Network/Fetch error:", err);
       clearAuth(false);
     } finally {
+      isFetchingRef.current = false;
       setIsLoading(false);
     }
   };
@@ -116,12 +117,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const clearAuth = async (redirect: boolean = true) => {
     try {
       if (userId) {
-        trackEvent("logout", {
-          user_id: userId,
-          username,
-          role,
-          email,
-        });
+        trackEvent("logout", { user_id: userId, username, role, email });
       }
 
       await fetch("https://bildare-backend.onrender.com/logout", {
@@ -139,16 +135,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setRefreshToken(null);
       setProfile(null);
       setInterests([]);
-      hasFetchedRef.current = false;
+      isFetchingRef.current = false;
 
       if (redirect) {
-        window.location.href = "/auth";
+        router.replace("/auth"); // SPA-style redirect
       }
     }
   };
 
   useEffect(() => {
-    fetchSession();
+    // Skip fetchSession on /auth page to prevent loops
+    if (typeof window !== "undefined" && window.location.pathname !== "/auth") {
+      fetchSession();
+    }
     return () => {
       if (redirectTimeoutRef.current) clearTimeout(redirectTimeoutRef.current);
     };
