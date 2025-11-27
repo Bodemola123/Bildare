@@ -351,7 +351,7 @@ const Body: React.FC = () => {
           <p className="cursor-pointer hover:text-[#b9f500] hover:underline-offset-4 hover:underline ">Privacy</p>
         </div>
       </div>
-                 <div className="fixed bottom-16 right-10 0 flex flex-col items-end space-y-2">
+                 <div className="cursor-pointer fixed bottom-16 right-10 0 flex flex-col items-end space-y-2">
         {isOpen && (
           <div className="p-4 rounded-2xl flex flex-col items-start justify-between bg-[#1C1D19] text-white w-64 shadow-xl">
             <button className="py-1 hover:text-[#B9F500]">Welcome to Bildare</button>
@@ -369,7 +369,7 @@ const Body: React.FC = () => {
 
         <button
           onClick={() => setIsOpen((prev) => !prev)}
-          className="flex justify-center items-center bg-[#1C1D19] text-[#B9F500] gap-2.5 px-4 py-2 rounded-2xl shadow-lg"
+          className="flex justify-center cursor-pointer items-center bg-[#1C1D19] text-[#B9F500] gap-2.5 px-4 py-2 rounded-2xl shadow-lg"
         >
           <p>Get Started</p>
           <ChevronUp size={14} />

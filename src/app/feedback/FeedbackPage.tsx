@@ -116,7 +116,7 @@ const FeedbackPage = () => {
           </div>
           <form className="flex flex-col gap-5 w-full" onSubmit={e => e.preventDefault()}>
             {/* Name */}
-            <div className="grid w-full items-center gap-2">
+            <div className="grid w-full items-center gap-4">
               <Label htmlFor="name">Name</Label>
               <div className="relative h-[56px] md:h-[64px]">
                 <Input
@@ -124,14 +124,14 @@ const FeedbackPage = () => {
                   value={name}
                   onFocus={() => trackEvent("feedback_form_field_focus", { field: "name" })}
                   onChange={e => setName(e.target.value)}
-                  className="pl-10 h-full placeholder:text-[#757575] text-white w-full bg-[#1C1D19]"
+                  className="pl-10 h-full placeholder:text-[#757575] text-white w-full bg-[#1C1D19] !rounded-[38px]"
                 />
                 <UserRound className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               </div>
             </div>
 
             {/* Email */}
-            <div className="grid w-full items-center gap-2">
+            <div className="grid w-full items-center gap-4">
               <Label>Email</Label>
               <div className="relative h-[56px] md:h-[64px]">
                 <Input
@@ -139,14 +139,14 @@ const FeedbackPage = () => {
                   value={email}
                   onFocus={() => trackEvent("feedback_form_field_focus", { field: "email" })}
                   onChange={e => setEmail(e.target.value)}
-                  className="pl-10 h-full placeholder:text-[#757575] text-white w-full bg-[#1C1D19]"
+                  className="pl-10 h-full !rounded-[38px] placeholder:text-[#757575] text-white w-full bg-[#1C1D19]"
                 />
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               </div>
             </div>
 
             {/* Subject */}
-            <div className="grid w-full items-center gap-2">
+            <div className="grid w-full items-center gap-4">
               <Label>Subject</Label>
               <div className="relative h-[56px] md:h-[64px]">
                 <Input
@@ -154,21 +154,21 @@ const FeedbackPage = () => {
                   value={subject}
                   onFocus={() => trackEvent("feedback_form_field_focus", { field: "subject" })}
                   onChange={e => setSubject(e.target.value)}
-                  className="pl-10 h-full placeholder:text-[#757575] text-white w-full bg-[#1C1D19]"
+                  className="pl-10 h-full !rounded-[38px] placeholder:text-[#757575] text-white w-full bg-[#1C1D19]"
                 />
                 <NotebookPen className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               </div>
             </div>
 
             {/* Message */}
-            <div className="grid w-full items-center gap-2">
+            <div className="grid w-full items-center gap-4">
               <Label>Message</Label>
               <Textarea
                 placeholder="Tell us a little bit about yourself"
                 value={message}
                 onFocus={() => trackEvent("feedback_form_field_focus", { field: "message" })}
                 onChange={e => setMessage(e.target.value)}
-                className="resize-none w-full h-[202px] bg-[#1C1D19] border border-[#292A251A] px-4 py-3 rounded-2xl"
+                className="resize-none w-full !rounded-2xl h-[202px] bg-[#1C1D19] border border-[#292A251A] px-4 py-3 "
               />
             </div>
           </form>
@@ -176,7 +176,7 @@ const FeedbackPage = () => {
           <button
             onClick={handleSend}
             disabled={loading}
-            className={`w-full bg-[#B9F500] py-4 rounded-2xl font-bold text-black flex justify-center items-center gap-2 ${
+            className={`w-full cursor-pointer bg-[#B9F500] py-4 rounded-2xl font-bold text-black flex justify-center items-center gap-2 ${
               loading ? "opacity-70 cursor-not-allowed" : ""
             }`}
           >

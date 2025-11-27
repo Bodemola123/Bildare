@@ -29,6 +29,7 @@ interface AuthContextType {
   accessToken: string | null;
   refreshToken: string | null;
   profile: UserProfile | null;
+  interests: string[];  
   isLoading: boolean;
   fadeOut: boolean;
   fetchSession: () => Promise<void>;
@@ -46,6 +47,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [interests, setInterests] = useState<string[]>([]);
+
   const [fadeOut, setFadeOut] = useState(false);
 
   const { trackEvent } = useGoogleAnalytics();
@@ -70,6 +73,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         console.log("User info is:", data)
 
         setUserId(data.user_id ?? null);
+        setInterests(data.interests ?? []);
         setUsername(data.username ?? null);
         setRole(data.role ?? null);
         setEmail(data.email ?? null);
@@ -134,6 +138,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setAccessToken(null);
       setRefreshToken(null);
       setProfile(null);
+      setInterests([]);
       hasFetchedRef.current = false;
 
       if (redirect) {
@@ -156,6 +161,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         username,
         role,
         email,
+        interests,
         accessToken,
         refreshToken,
         profile,
@@ -181,6 +187,7 @@ export const useAuth = () => {
       accessToken: null,
       refreshToken: null,
       profile: null,
+      interests: [],
       isLoading: false,
       fadeOut: false,
       fetchSession: async () => {},

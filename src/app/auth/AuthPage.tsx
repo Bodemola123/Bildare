@@ -83,7 +83,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ setCurrentSlide }) => {
         localStorage.setItem("signupPassword", password);
         setCurrentSlide("emailVerify");
         toast.success(
-          "Signup successful! We sent you an OTP. Please verify your email."
+          "Signup successful! Kindly complete your profile"
         );
 
         // Track signup

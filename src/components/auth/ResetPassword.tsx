@@ -34,7 +34,7 @@ const ResetPassword: React.FC<ResetPasswordProps> = ({ setCurrentSlide }) => {
     const email = localStorage.getItem("forgotPasswordEmail"); 
     const token = localStorage.getItem("resetToken"); 
 
-    if (!email || !token) return toast("Missing email or token");
+    if (!email) return toast("Missing email");
 
     setLoading(true);
     try {
@@ -42,7 +42,7 @@ const ResetPassword: React.FC<ResetPasswordProps> = ({ setCurrentSlide }) => {
       const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, token, newPassword }),
+        body: JSON.stringify({ email, newPassword }),
       });
 
       if (res.ok) {
