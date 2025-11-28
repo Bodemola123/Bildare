@@ -110,7 +110,7 @@ const Step1PersonalInfo: React.FC<Props> = ({
         e.stopPropagation();
         removeAvatar();
       }}
-      className="absolute -top-6 right-0 bg-black/60 rounded-full p-1 text-white text-xs z-10"
+      className="absolute -top-[1px] right-0 bg-black/60 rounded-full p-1 text-white text-xs z-10"
       title="Remove avatar"
     >
       <GoX/>

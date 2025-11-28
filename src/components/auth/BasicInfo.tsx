@@ -89,8 +89,8 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ setCurrentSlide }) => {
     const email = localStorage.getItem("signupEmail");
     const password = localStorage.getItem("signupPassword");
 
-    if (!email || !password) {
-      toast("Missing signup email or password");
+    if (!email) {
+      toast("Missing signup email. Please sign up again.");
       return;
     }
 
@@ -132,7 +132,6 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ setCurrentSlide }) => {
       const respJson = await res.json().catch(() => ({}));
 
       if (res.ok) {
-        localStorage.clear
         await fetchSession();
         toast("Profile completed successfully!");
         trackEvent("profile_completed", { role: data.role });

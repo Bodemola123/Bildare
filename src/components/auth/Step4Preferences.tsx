@@ -23,6 +23,9 @@ const categories = [
   "Meme",
   "Bots",
   "Landing Page",
+  "Lifestyle",
+  "Social Media",
+  "Travel"
 ];
 
 const FilterButton: React.FC<{
@@ -45,7 +48,7 @@ const FilterButton: React.FC<{
       className={`
         transform
         transition-transform duration-200
-        ${active ? "rotate-45 scale-110 animate-bounce" : "group-hover:rotate-45 group-hover:scale-110"}
+        ${active ? "rotate-45 scale-110 " : "group-hover:rotate-45 group-hover:scale-110"}
       `}
     />
   </button>

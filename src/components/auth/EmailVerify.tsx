@@ -150,7 +150,7 @@ const EmailVerify: React.FC<EmailVerifyProps> = ({ setCurrentSlide }) => {
             maxLength={6}
             pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
           >
-            <InputOTPGroup className="flex gap-3 md:gap-4">
+            <InputOTPGroup className="flex gap-3 md:gap-3">
               {[0, 1, 2, 3, 4, 5].map((i) => (
                 <InputOTPSlot
                   key={i}
