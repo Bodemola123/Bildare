@@ -30,6 +30,10 @@ interface AuthContextType {
   accessToken: string | null;
   refreshToken: string | null;
   profile: UserProfile | null;
+  referralCode: string | null;
+  referred_by: string | null;
+  referredBy: string | null;
+  referralCount: number;
   interests: string[];
   isLoading: boolean;
   fadeOut: boolean;
@@ -49,7 +53,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [interests, setInterests] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [referralCode, setReferralCode] = useState<string | null>(null);
+const [referred_by, setReferredBy] = useState<string | null>(null);
+const [referredBy, setReferredByUser] = useState<string | null>(null);
+const [referralCount, setReferralCount] = useState<number>(0);
   const [fadeOut, setFadeOut] = useState(false);
+  const hasFetchedSession = useRef(false);
+
 
   const { trackEvent } = useGoogleAnalytics();
   const router = useRouter();
@@ -57,64 +67,71 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const isFetchingRef = useRef(false);
   const redirectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const fetchSession = async () => {
-    if (isFetchingRef.current) return;
-    isFetchingRef.current = true;
+const fetchSession = async () => {
+  // Prevent duplicate calls completely
+  if (hasFetchedSession.current || isFetchingRef.current) return;
 
-    setIsLoading(true);
-    try {
-      const res = await fetch("https://bildare-backend.onrender.com/me", {
-        method: "GET",
-        credentials: "include",
-      });
+  hasFetchedSession.current = true;
+  isFetchingRef.current = true;
 
-      if (res.ok) {
-        const data = await res.json();
-        console.log("User info is:", data);
+  setIsLoading(true);
+  try {
+    const res = await fetch("https://bildare-backend.onrender.com/me", {
+      method: "GET",
+      credentials: "include",
+    });
 
-        setUserId(data.user_id ?? null);
-        setInterests(data.interests ?? []);
-        setUsername(data.username ?? null);
-        setRole(data.role ?? null);
-        setEmail(data.email ?? null);
-        setAccessToken(data.accessToken ?? null);
-        setRefreshToken(data.refreshToken ?? null);
-        setProfile(data.profile ?? null);
+    if (res.ok) {
+      const data = await res.json();
+      console.log("User info:", data);
 
-        if (data.user_id) {
-          trackEvent("login_success", {
-            user_id: data.user_id,
-            username: data.username,
-            role: data.role,
-            email: data.email,
-          });
-        }
+      setUserId(data.user_id ?? null);
+      setInterests(data.interests ?? []);
+      setUsername(data.username ?? null);
+      setRole(data.role ?? null);
+      setEmail(data.email ?? null);
+      setAccessToken(data.accessToken ?? null);
+      setRefreshToken(data.refreshToken ?? null);
+      setProfile(data.profile ?? null);
 
-        // Redirect away from /auth after login
-        if (typeof window !== "undefined" && window.location.pathname === "/auth") {
-          setFadeOut(true);
-          redirectTimeoutRef.current = setTimeout(() => {
-            router.replace("/"); // SPA-style redirect
-          }, 300);
-        }
-      } else if (res.status === 401) {
-        console.warn("❌ Not authenticated (401)");
-        clearAuth(false);
-      } else {
-        const errorData = await res.json().catch(() => ({}));
-        console.error(`❌ Session fetch failed (${res.status}):`, errorData);
-        clearAuth(false);
+      setReferralCode(data.referralCode ?? null);
+      setReferredBy(data.referred_by ?? null);
+      setReferredByUser(data.referredBy ?? null);
+      setReferralCount(data.referralCount ?? 0);
+
+      if (data.user_id) {
+        trackEvent("login_success", {
+          user_id: data.user_id,
+          username: data.username,
+          role: data.role,
+          email: data.email,
+        });
       }
-    } catch (err) {
-      console.error("❌ Network/Fetch error:", err);
+
+      if (typeof window !== "undefined" && window.location.pathname === "/auth") {
+        setFadeOut(true);
+        redirectTimeoutRef.current = setTimeout(() => {
+          router.replace("/");
+        }, 300);
+      }
+    } else if (res.status === 401) {
       clearAuth(false);
-    } finally {
-      isFetchingRef.current = false;
-      setIsLoading(false);
+    } else {
+      clearAuth(false);
     }
-  };
+  } catch (err) {
+    console.error("❌ fetch error:", err);
+    clearAuth(false);
+  } finally {
+    isFetchingRef.current = false;
+    setIsLoading(false);
+  }
+};
+
 
   const clearAuth = async (redirect: boolean = true) => {
+    hasFetchedSession.current = false;
+
     try {
       if (userId) {
         trackEvent("logout", { user_id: userId, username, role, email });
@@ -164,6 +181,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         accessToken,
         refreshToken,
         profile,
+        referralCode,
+        referred_by,
+        referredBy,
+        referralCount,
         isLoading,
         fadeOut,
         fetchSession,
@@ -187,6 +208,10 @@ export const useAuth = () => {
       refreshToken: null,
       profile: null,
       interests: [],
+      referralCode: null,
+      referred_by: null,
+      referredBy: null,
+      referralCount: 0,
       isLoading: false,
       fadeOut: false,
       fetchSession: async () => {},
