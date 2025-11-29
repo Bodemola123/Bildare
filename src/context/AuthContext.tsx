@@ -76,7 +76,7 @@ const fetchSession = async () => {
 
   setIsLoading(true);
   try {
-    const res = await fetch("https://bildare-backend.onrender.com/me", {
+    const res = await fetch("https://bildare-backend.onrender.com/user/me", {
       method: "GET",
       credentials: "include",
     });
@@ -137,7 +137,7 @@ const fetchSession = async () => {
         trackEvent("logout", { user_id: userId, username, role, email });
       }
 
-      await fetch("https://bildare-backend.onrender.com/logout", {
+      await fetch("https://bildare-backend.onrender.com/auth/logout", {
         method: "POST",
         credentials: "include",
       });

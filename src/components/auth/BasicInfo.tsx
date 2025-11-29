@@ -97,7 +97,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ setCurrentSlide }) => {
     setLoading(true);
 
     try {
-      const endpoint = "https://bildare-backend.onrender.com/complete-profile"; // customize if needed
+      const endpoint = "https://bildare-backend.onrender.com/auth/complete-profile"; // customize if needed
 
       const cleanInterests = data.interests
         .split(",")

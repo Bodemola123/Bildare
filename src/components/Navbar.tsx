@@ -105,10 +105,22 @@ const Navbar: React.FC = () => {
 
         <Separator className="bg-[#FEF9B514]" />
 
-        <div className="grid grid-cols-2 gap-4 md:flex md:flex-col md:gap-2">
-          <NavItem icon={<IoMdSettings size={18} />} label="Settings" onClick={() => trackEvent("nav_clicked", { item: "Settings" })} />
-          <NavItem icon={<BiSolidMessageRounded size={18} />} label="Feedback" onClick={() => trackEvent("nav_clicked", { item: "Feedback" })} />
-        </div>
+<div className="grid grid-cols-2 gap-4 md:flex md:flex-col md:gap-2">
+  <NavItem
+    icon={<IoMdSettings size={18} />}
+    label="Settings"
+    href="/settings"
+    onClick={() => trackEvent("nav_clicked", { item: "Settings" })}
+  />
+  
+  <NavItem
+    icon={<BiSolidMessageRounded size={18} />}
+    label="Feedback"
+    href="#"
+    onClick={() => trackEvent("nav_clicked", { item: "Feedback" })}
+  />
+</div>
+
       </nav>
 
       {/* Modal */}
