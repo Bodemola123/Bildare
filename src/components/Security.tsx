@@ -17,6 +17,16 @@ const Security = () => {
 
   const [loading, setLoading] = useState(false);
 
+  // Password criteria check
+  const passwordCriteria = {
+    length: newPassword.length >= 8,
+    number: /[0-9]/.test(newPassword),
+    symbol: /[!@#$%^&*(),.?":{}|<>]/.test(newPassword),
+    upperLower: /[A-Z]/.test(newPassword) && /[a-z]/.test(newPassword),
+  };
+
+  const isPasswordStrong = Object.values(passwordCriteria).every(Boolean);
+
   const handleChangePassword = async () => {
     if (!oldPassword || !newPassword || !confirmPassword) {
       toast.error("All fields are required.");
@@ -25,6 +35,11 @@ const Security = () => {
 
     if (newPassword !== confirmPassword) {
       toast.error("New passwords do not match.");
+      return;
+    }
+
+    if (!isPasswordStrong) {
+      toast.error("Password does not meet all criteria.");
       return;
     }
 
@@ -51,8 +66,6 @@ const Security = () => {
         toast.error(data.error || "Failed to update password.");
       } else {
         toast.success("Password updated successfully.");
-
-        // Clear fields
         setOldPassword("");
         setNewPassword("");
         setConfirmPassword("");
@@ -110,6 +123,22 @@ const Security = () => {
             {showNew ? <LuEye size={20} /> : <LuEyeClosed size={20} />}
           </button>
         </div>
+
+        {/* Password Criteria Checklist */}
+        <div className="mt-2 flex flex-col gap-1 text-xs">
+          <p className={`${passwordCriteria.length ? "text-green-400" : "text-red-500"}`}>
+            • At least 8 characters
+          </p>
+          <p className={`${passwordCriteria.number ? "text-green-400" : "text-red-500"}`}>
+            • Includes a number
+          </p>
+          <p className={`${passwordCriteria.symbol ? "text-green-400" : "text-red-500"}`}>
+            • Includes a symbol (!@#$…)
+          </p>
+          <p className={`${passwordCriteria.upperLower ? "text-green-400" : "text-red-500"}`}>
+            • Uppercase & lowercase letters
+          </p>
+        </div>
       </div>
 
       {/* CONFIRM PASSWORD */}
@@ -131,6 +160,16 @@ const Security = () => {
             {showConfirm ? <LuEye size={20} /> : <LuEyeClosed size={20} />}
           </button>
         </div>
+
+        {confirmPassword && (
+          <p
+            className={`text-xs mt-1 ${
+              confirmPassword === newPassword ? "text-green-400" : "text-red-500"
+            }`}
+          >
+            {confirmPassword === newPassword ? "Passwords match" : "Passwords do not match"}
+          </p>
+        )}
       </div>
 
       {/* BUTTON */}
@@ -138,8 +177,9 @@ const Security = () => {
         <button
           onClick={handleChangePassword}
           disabled={loading}
-          className={`px-6 py-3 rounded-xl bg-[#B9F500] text-black font-semibold cursor-pointer 
-          ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+          className={`px-6 py-3 rounded-xl bg-[#B9F500] text-black font-semibold cursor-pointer ${
+            loading ? "opacity-50 cursor-not-allowed" : ""
+          }`}
         >
           {loading ? "Changing..." : "Change Password"}
         </button>
