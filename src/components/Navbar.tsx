@@ -17,6 +17,8 @@ import { Separator } from "./ui/separator";
 import Whatisnew from "./Whatisnew";
 import { useAuth } from "@/context/AuthContext";
 import { useGoogleAnalytics } from "@/lib/useGoogleAnalytics";
+import SettingsPage from "./settingsPage";
+
 
 type NavItemProps = {
   icon: React.ReactNode;
@@ -38,6 +40,7 @@ const NavItem: React.FC<NavItemProps> = ({ icon, label, href = "/#", onClick }) 
 
 const Navbar: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const { username, fetchSession } = useAuth(); 
   const { trackEvent } = useGoogleAnalytics();
 
@@ -50,6 +53,13 @@ const Navbar: React.FC = () => {
     trackEvent("whats_new_modal_opened");
   };
   const closeModal = () => setIsModalOpen(false);
+
+  const openSettingsModal = () => {
+    setIsSettingsModalOpen(true);
+    trackEvent("settings_opened_from_navbar");
+  }
+
+  const closeSettingsModal = () => setIsSettingsModalOpen(false);
 
   const isAuthenticated = !!username; 
 
@@ -109,8 +119,8 @@ const Navbar: React.FC = () => {
   <NavItem
     icon={<IoMdSettings size={18} />}
     label="Settings"
-    href="/settings"
-    onClick={() => trackEvent("nav_clicked", { item: "Settings" })}
+    onClick={() => {openSettingsModal(); trackEvent("nav_clicked", { item: "Settings" })}}
+
   />
   
   <NavItem
@@ -124,6 +134,7 @@ const Navbar: React.FC = () => {
       </nav>
 
       {/* Modal */}
+      {isSettingsModalOpen && <SettingsPage closeSettingsModal={closeSettingsModal} />}
       {isModalOpen && <Whatisnew closeModal={closeModal} />}
     </>
   );
