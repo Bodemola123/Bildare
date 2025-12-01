@@ -18,6 +18,7 @@ import Whatisnew from "./Whatisnew";
 import { useAuth } from "@/context/AuthContext";
 import { useGoogleAnalytics } from "@/lib/useGoogleAnalytics";
 import SettingsPage from "./settingsPage";
+import { useRouter } from "next/navigation";
 
 
 type NavItemProps = {
@@ -43,7 +44,7 @@ const Navbar: React.FC = () => {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const { username, fetchSession } = useAuth(); 
   const { trackEvent } = useGoogleAnalytics();
-
+  const router = useRouter();
   useEffect(() => {
     fetchSession();
   }, [fetchSession]);
@@ -116,12 +117,21 @@ const Navbar: React.FC = () => {
         <Separator className="bg-[#FEF9B514]" />
 
 <div className="grid grid-cols-2 gap-4 md:flex md:flex-col md:gap-2">
-  <NavItem
-    icon={<IoMdSettings size={18} />}
-    label="Settings"
-    onClick={() => {openSettingsModal(); trackEvent("nav_clicked", { item: "Settings" })}}
+<NavItem
+  icon={<IoMdSettings size={18} />}
+  label="Settings"
+  onClick={() => {
+    trackEvent("nav_clicked", { item: "Settings" });
 
-  />
+    if (!isAuthenticated) {
+      router.push("/auth");
+      return;
+    }
+
+    openSettingsModal();
+  }}
+/>
+
   
   <NavItem
     icon={<BiSolidMessageRounded size={18} />}
