@@ -59,7 +59,7 @@ const VerifyEmail: React.FC<VerifyEmailProps> = ({ setCurrentSlide }) => {
     trackEvent("otp_continue_clicked", { email });
 
     try {
-      const endpoint = "https://bildare-backend.onrender.com/password/verify-reset-token";
+      const endpoint = "/api/password/verify-token";
       const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -90,7 +90,7 @@ const VerifyEmail: React.FC<VerifyEmailProps> = ({ setCurrentSlide }) => {
     trackEvent("otp_resend_clicked", { email });
 
     try {
-      const endpoint = "https://bildare-backend.onrender.com/password/request-password-reset";
+      const endpoint = "/api/password/request-reset";
       const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

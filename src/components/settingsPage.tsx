@@ -151,7 +151,7 @@ const openSecurityTab = () => setActiveTab("security");
     try {
       const avatar_url = isAvatarChanged ? await uploadAvatar() : profile?.avatar_url;
 
-      const res = await fetch("https://bildare-backend.onrender.com/user/update-user", {
+      const res = await fetch("/api/user/update-user", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -184,7 +184,7 @@ const openSecurityTab = () => setActiveTab("security");
 
     setDeleting(true);
     try {
-      const res = await fetch("https://bildare-backend.onrender.com/admin/users", {
+      const res = await fetch("/api/admin/users", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_id: userId }),

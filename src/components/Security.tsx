@@ -47,7 +47,7 @@ const Security = () => {
 
     try {
       const res = await fetch(
-        "https://bildare-backend.onrender.com/user/change-password",
+        "/api/user/change-password",
         {
           method: "PUT",
           credentials: "include",

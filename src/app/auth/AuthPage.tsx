@@ -71,8 +71,8 @@ useEffect(() => {
 
     try {
       const endpoint = isSignUp
-        ? "https://bildare-backend.onrender.com/auth/signup"
-        : "https://bildare-backend.onrender.com/auth/login";
+        ? "/api/auth/signup"
+        : "/api/auth/login";
 
       const res = await fetch(endpoint, {
         method: "POST",
@@ -188,7 +188,7 @@ useEffect(() => {
             onClick={() => {
               trackEvent("login", { method: "google" }); // Track Google login click
               window.location.href =
-                "https://bildare-backend.onrender.com/oauth/google";
+                "/api/oauth/google";
             }}
           >
             <Image src="/google.svg" alt="Google" width={20} height={20} />
@@ -198,7 +198,7 @@ useEffect(() => {
             onClick={() => {
               trackEvent("login", { method: "github" }); // Track Google login click
               window.location.href =
-                "https://bildare-backend.onrender.com/oauth/github";
+                "/api/oauth/github";
             }}
           >
             <FaGithub className="text-xl"/>
