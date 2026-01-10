@@ -35,11 +35,14 @@ export async function GET(req: NextRequest) {
     });
 
     // Flatten tags and usecases for frontend
-    const templates = templatesRaw.map((t) => ({
-      ...t,
-      tags: t.tags.map((tagOnTemplate) => tagOnTemplate.tag.name),
-      usecases: t.usecases.map((uc) => uc.title),
-    }));
+const templates = templatesRaw.map(
+  (t: any) => ({
+    ...t,
+    tags: t.tags.map((tagOnTemplate: any) => tagOnTemplate.tag.name),
+    usecases: t.usecases.map((uc: any) => uc.title),
+  })
+);
+
 
     return NextResponse.json({ templates });
   } catch (err: any) {

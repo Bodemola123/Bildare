@@ -1,46 +1,52 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
-// Dynamic route: /api/templates/[id]
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } } // correctly typed inline
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params; // destructure id
+    const { id } = await params; // ✅ IMPORTANT
 
     const templateRaw = await prisma.template.findUnique({
       where: { template_id: id },
       include: {
-        media: true,    // all media
-        usecases: true, // all usecases
+        media: true,
+        usecases: true,
       },
     });
 
     if (!templateRaw) {
-      return NextResponse.json({ error: "Template not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Template not found" },
+        { status: 404 }
+      );
     }
 
-    // Find cover image
-    const coverMedia = templateRaw.media.find((m) => m.media_type === "cover");
+const coverMedia = templateRaw.media.find(
+  (m: { media_type: string }) => m.media_type === "cover"
+);
 
-    // Flatten usecases to strings
-    const usecases = templateRaw.usecases.map((u) => u.title);
+const usecases = templateRaw.usecases.map(
+  (u: { title: string }) => u.title
+);
 
-    const template = {
+
+    return NextResponse.json({
       template_id: templateRaw.template_id,
       title: templateRaw.title,
       price: templateRaw.price,
       description: templateRaw.description,
-      cover: coverMedia ? coverMedia.url : null,
-      media: templateRaw.media, // include full media array for modal
+      cover: coverMedia?.url ?? null,
+      media: templateRaw.media,
       usecases,
-      example_links: templateRaw.example_links || null,
-    };
-
-    return NextResponse.json(template); // send template directly
+      example_links: templateRaw.example_links ?? null,
+    });
   } catch (err: any) {
     console.error(err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return NextResponse.json(
+      { error: err.message },
+      { status: 500 }
+    );
   }
 }
