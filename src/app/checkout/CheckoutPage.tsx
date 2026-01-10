@@ -35,7 +35,11 @@ interface TemplateData {
     url: string;
   }[];
   usecases: string[];
-  example_links?: { figma_duplicate?: string; figma_download?: string }[];
+  example_links?: {
+  figma_duplicate?: string;
+  figma_download?: string;
+};
+
 }
 
 interface CheckoutPageProps {
