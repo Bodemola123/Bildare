@@ -130,7 +130,7 @@ const handlePayClick = () => {
         <div className="animate-bounce mb-4">
           <Image src="/BigBildare.svg" alt="Logo" width={120} height={40} />
         </div>
-        <p className="text-lg font-semibold">Loading template...</p>
+        <p className="text-lg font-semibold">Loading template details...</p>
       </div>
     );
   }
