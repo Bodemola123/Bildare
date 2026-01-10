@@ -23,33 +23,91 @@ import { useGoogleAnalytics } from "@/lib/useGoogleAnalytics";
 import PreviewPageModal from "@/app/preview/PreviewPage";
 
 
+interface TemplateCardProps {
+  template: {
+    template_id: string;
+    title: string;
+    price: number;
+    stack: string[];
+    tags: string[];
+    usecases: string[];
+    media: {
+      url: string;
+      media_type: string;
+      order_index: number;
+    }[];
+  };
+}
 
-const categories = [
-  "Blockchain",
-  "Web3",
-  "Artificial Intelligence",
-  "E commerce",
-  "SAAS",
-  "Dashboards",
-  "Meme",
-  "Bots",
-  "Landing Page",
-];
+interface Category {
+  category_id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  _count?: { templates: number };
+}
 
-const FilterButton: React.FC<{ label: string }> = ({ label }) => (
-  <button className="flex items-center border border-transparent gap-2 bg-[#292A25] px-[10px] py-[6px]  text-white rounded-2xl text-sm font-medium group hover:border-[#3976F6] hover:border hover:bg-[#3976F61A] hover:text-[#3976F6] transition-colors">
+
+ 
+interface FilterButtonProps {
+  label: string;
+  selected?: boolean;
+  onClick?: () => void;
+}
+
+const FilterButton: React.FC<FilterButtonProps> = ({ label, selected = false, onClick }) => (
+  <button
+    onClick={onClick}
+    className={`
+      flex items-center border border-transparent gap-2 
+      px-[10px] py-[6px] text-sm font-medium rounded-2xl transition-colors
+      ${selected 
+        ? "bg-[#3976F61A] border-[#3976F6] text-[#3976F6]" // selected state
+        : "bg-[#292A25] text-white hover:bg-[#3976F61A] hover:border-[#3976F6] hover:text-[#3976F6]"} // default + hover
+    `}
+  >
     {label}
-    <Plus className="group-hover:rotate-45 transition-transform" size={13} />
+    <Plus className={`transition-transform ${selected ? "rotate-45" : "group-hover:rotate-45"}`} size={13} />
   </button>
 );
 
-export const TemplateCard = () => {
+
+const TemplateSkeleton = () => (
+  <div className="flex flex-col justify-between bg-[#292a25] p-4 sm:p-6 rounded-2xl w-full h-[562px] animate-pulse">
+    <div className="h-5 bg-gray-600 rounded w-1/3 mb-4" /> {/* Title */}
+    <div className="w-full h-[220px] sm:h-[433px] bg-gray-700 rounded-[16px] mb-4" /> {/* Cover */}
+    <div className="flex justify-between items-center mt-4">
+      <div className="flex gap-2">
+        {Array(4).fill(0).map((_, idx) => (
+          <div key={idx} className="w-4 h-4 bg-gray-600 rounded-full" />
+        ))}
+      </div>
+      <div className="w-10 h-5 bg-gray-600 rounded" /> {/* Price */}
+    </div>
+  </div>
+);
+
+
+export const TemplateCard: React.FC<TemplateCardProps> = ({ template }) => {
   const { trackEvent } = useGoogleAnalytics();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleOpenModal = () => {
-    trackEvent("template_card_click", { template: "Template Name" });
+    trackEvent("template_card_click", { template: template.title });
     setIsModalOpen(true);
+  };
+
+  // Pick the cover image from media
+  const coverImage =
+    template.media.find((m) => m.media_type === "cover")?.url ??
+    "/default-cover.png";
+
+  // Map stack to icon images
+  const stackIcons: Record<string, string> = {
+    React: "/reactjs.svg",
+    Tailwind: "/tailwind.svg",
+    JavaScript: "/javascript.svg",
+    Figma: "/figmaa.svg",
   };
 
   return (
@@ -62,39 +120,64 @@ export const TemplateCard = () => {
         <div className="flex justify-between items-center mb-4">
           <span className="flex items-center gap-2 text-xs sm:text-sm font-medium text-white">
             <Dot size={20} className="sm:size-6" />
-            Template Name
+            {template.title}
           </span>
           <div className="bg-[#1C1D19] text-xs sm:text-sm font-medium px-2.5 sm:px-3 py-1.5 rounded-full">
             Preview
           </div>
         </div>
 
-        {/* Preview Image */}
-        <div className="w-full h-[220px] sm:h-[433px] bg-[#C9C9C9] rounded-[16px] flex items-center justify-center overflow-hidden">
+        {/* Cover Image */}
+        <div className="w-full h-[220px] md:h-[433px] rounded-[16px] flex items-center justify-center overflow-hidden bg-gray-700">
+          {coverImage ? (
+            <img
+              src={coverImage}
+              alt={template.title}
+              width={400}
+              height={300}
+              className="object-contain w-full h-full"
+            />
+          ) : (
+            <div className="animate-pulse w-full h-full bg-gray-600" />
+          )}
         </div>
 
-        {/* Footer */}
+        {/* Footer: Stack icons */}
         <div className="flex justify-between items-center mt-4">
           <div className="flex items-center gap-2 sm:gap-3">
-            <Image src="/reactjs.svg" alt="React" width={16} height={16} />
-            <Image src="/tailwind.svg" alt="Tailwind" width={16} height={16} />
-            <Image src="/javascript.svg" alt="JS" width={16} height={16} />
-            <Image src="/figmaa.svg" alt="Figma" width={16} height={16} />
+            {template.stack.map((tech) => (
+              <Image
+                key={tech}
+                src={stackIcons[tech] ?? "/default.svg"}
+                alt={tech}
+                width={24}
+                height={24}
+              />
+            ))}
           </div>
-          <p className="text-[#B9F500] font-semibold text-sm sm:text-base">$50</p>
+          <p className="text-[#B9F500] font-semibold text-sm sm:text-base">
+            ${template.price}
+          </p>
         </div>
       </div>
 
-      {/* Modal */}
       {isModalOpen && (
-        <PreviewPageModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+        <PreviewPageModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          template={template} // Full template with media passed here
+        />
       )}
     </>
   );
 };
 
+
 const Body: React.FC = () => {
   const [openDropdown, setOpenDropdown] = useState<number | null>(null);
+  const [categories, setCategories] = useState<Category[]>([]);
+const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+const [templates, setTemplates] = useState<any[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
     const [isOpen, setIsOpen] = useState(false);
       const [isModalOpen, setIsModalOpen] = useState(false);
@@ -113,6 +196,37 @@ const Body: React.FC = () => {
     
   
   const [loading, setLoading] = useState(false);
+  // Fetch categories
+useEffect(() => {
+  fetch("/api/categories")
+    .then((res) => res.json())
+    .then((data) => setCategories(data.categories))
+    .finally(() => setLoading(false));
+}, []);
+
+// Fetch templates when category changes
+useEffect(() => {
+  setLoading(true);
+
+  const url = selectedCategory
+    ? `/api/templates?category=${selectedCategory}`
+    : "/api/templates";
+
+  fetch(url)
+    .then((res) => res.json())
+    .then((data) => {
+      // Save the full response to localStorage so you can inspect it
+      localStorage.setItem("templatesData", JSON.stringify(data));
+
+      // Optionally log just to double-check
+      console.log("Templates data saved to localStorage");
+
+      setTemplates(data.templates);
+    })
+    .catch((err) => console.error("Failed to fetch templates:", err))
+    .finally(() => setLoading(false));
+}, [selectedCategory]);
+
 
   // derive initials
   const getInitials = (fullName: string | null) => {
@@ -121,6 +235,7 @@ const Body: React.FC = () => {
     if (parts.length === 1) return parts[0][0].toUpperCase();
     return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
   };
+
 
   const dropdowns = [
     {
@@ -168,6 +283,11 @@ const Body: React.FC = () => {
       document.removeEventListener("keydown", handleEsc);
     };
   }, []);
+
+  const SkeletonButton = () => (
+  <div className="h-[32px] w-[100px] bg-gray-700 rounded-2xl animate-pulse" />
+);
+
 
   return (
     <>
@@ -218,11 +338,25 @@ const Body: React.FC = () => {
       {/* Filters & View Toggles */}
       <div className="flex flex-col md:flex-row justify-between gap-6">
         {/* Filters */}
-        <div className="flex flex-wrap gap-4 max-w-3xl">
-          {categories.map((category) => (
-            <FilterButton key={category} label={category} />
-          ))}
-        </div>
+<div className="flex flex-wrap gap-4 max-w-3xl">
+  {loading && categories.length === 0
+    ? Array(6).fill(0).map((_, idx) => <SkeletonButton key={idx} />)
+    : categories.map((category) => {
+        const isSelected = selectedCategory === category.slug;
+
+        return (
+          <FilterButton
+            key={category.category_id}
+            label={category.name}
+            selected={isSelected}
+            onClick={() => {
+              // toggle logic: deselect if already selected
+              setSelectedCategory(isSelected ? null : category.slug);
+            }}
+          />
+        );
+      })}
+</div>
 
         {/* Dropdown Buttons */}
         <div className="flex gap-2 items-start flex-wrap">
@@ -322,16 +456,18 @@ const Body: React.FC = () => {
       {/* Featured Templates */}
       <div className="flex flex-col gap-6 mt-1">
         <h2 className="text-lg font-semibold text-white">Featured Templates</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 sm:grid-rows-1 gap-4">
-          <TemplateCard />
-          <TemplateCard />
-          <TemplateCard />
-          <TemplateCard />
-          <TemplateCard />
-          <TemplateCard />
-          <TemplateCard />
-          <TemplateCard />
-        </div>
+<div className="grid grid-cols-1 md:grid-cols-2 sm:grid-rows-1 gap-4">
+  {loading
+    ? Array(4).fill(0).map((_, idx) => <TemplateSkeleton key={idx} />)
+    : templates.map((template) => (
+        <TemplateCard key={template.template_id} template={template} />
+      ))}
+
+  {!loading && templates.length === 0 && (
+    <p className="text-gray-400 mt-4">No templates to show</p>
+  )}
+</div>
+
 
       </div>
 

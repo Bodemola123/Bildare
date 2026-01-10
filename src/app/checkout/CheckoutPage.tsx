@@ -19,13 +19,121 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { toast } from "sonner"; // optional toast for errors
+import { toast, Toaster } from "sonner"; // optional toast for errors
+import { useRouter, useSearchParams } from "next/navigation";
 
+interface TemplateData {
+  template_id: string;
+  title: string;
+  price: number;
+  description: string;
+  media: {
+    media_id: string;
+    template_id: string;
+    media_type: string;
+    order_index: number;
+    url: string;
+  }[];
+  usecases: string[];
+  example_links?: { figma_duplicate?: string; figma_download?: string }[];
+}
 
+interface CheckoutPageProps {
+  templateId: string;
+}
 const CheckoutPage = () => {
+
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [date, setDate] = useState<Date | undefined>();
+  const [fadeOut, setFadeOut] = useState(false);
   const { username, email, clearAuth } = useAuth();
-  const [loading, setLoading] = useState(false);
+    const templateId = searchParams.get("template_id");
+
+    const [templateData, setTemplateData] = useState<TemplateData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!templateId) return;
+
+    const fetchTemplate = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(`/api/templates/${templateId}`);
+        const data = await res.json();
+        setTemplateData(data);
+        localStorage.setItem("checkout_template", JSON.stringify(data));
+      } catch (err) {
+        console.error("Failed to fetch template:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTemplate();
+  }, [templateId]);
+
+const handlePayClick = () => {
+  if (!templateData?.example_links) {
+    toast.error("No example link available");
+    return;
+  }
+
+  const { figma_duplicate, figma_download } = templateData.example_links;
+
+  const exampleLink = figma_duplicate || figma_download;
+
+  if (exampleLink) {
+    window.open(exampleLink, "_blank");
+  } else {
+    toast.error("No example link available");
+  }
+};
+
+  // const handlePayClick = () => {
+  //   // if (!username) {
+  //   //   router.push("/auth");
+  //   //   return;
+  //   // }
+
+  //   if (!templateData) return;
+
+  //   // Get first example link
+  //   let exampleLink = "";
+  //   if (templateData.example_links) {
+  //     const firstLink = templateData.example_links.find(
+  //       (l) => l.figma_duplicate || l.figma_download
+  //     );
+  //     if (firstLink) {
+  //       exampleLink = firstLink.figma_duplicate || firstLink.figma_download || "";
+  //     }
+  //   }
+
+  //   if (exampleLink) {
+  //     window.open(exampleLink, "_blank");
+  //   } else {
+  //     toast.error("No example link available");
+  //   }
+  // };
+
+    if (loading) {
+    return (
+      <div
+        className={`flex flex-col items-center justify-center h-screen w-screen text-white transition-opacity duration-500 ${
+          fadeOut ? "opacity-0" : "opacity-100"
+        }`}
+      >
+        <div className="animate-bounce mb-4">
+          <Image src="/BigBildare.svg" alt="Logo" width={120} height={40} />
+        </div>
+        <p className="text-lg font-semibold">Loading template...</p>
+      </div>
+    );
+  }
+
+  // Get the first media (order_index 0)
+  const mainMediaUrl =
+    templateData?.media.find((m) => m.order_index === 0)?.url ?? "";
 
 
   // derive initials
@@ -86,33 +194,31 @@ const CheckoutPage = () => {
       <div className="flex flex-col lg:grid lg:grid-cols-2 gap-10 w-full">
         {/* Left Column */}
         <div className="flex flex-col gap-6">
-          <h1 className="font-bold text-4xl md:text-5xl">Templates Name</h1>
-          <div className="bg-[#D9D9D9] h-64 md:h-[422px] rounded-2xl"></div>
+          <h1 className="font-bold text-4xl md:text-5xl">{templateData?.title}</h1>
+          <div className="bg-[#D9D9D9] h-64 md:h-[422px] rounded-2xl flex items-center justify-center overflow-hidden">
+            {mainMediaUrl ? (
+              <img
+                src={mainMediaUrl}
+                alt="Template Cover"
+                className="object-contain w-full h-full"
+              />
+            ) : null}
+          </div>
           <p
             className="text-sm md:text-base"
             style={{ lineHeight: "145%", letterSpacing: "-0.04em" }}
           >
-            Dive into the future of technology with organized categories, visually
-            stunning design, and interactive features, making your tech blogging
-            experience both intuitive and elegant.
+            {templateData?.description}
           </p>
 
           <div className="flex flex-col gap-4">
             <h4 className="text-2xl font-bold">Features</h4>
-            {[
-              "400+ Exclusive Pre-Built Templates",
-              "Feature 1",
-              "Feature 2",
-              "Feature 3",
-              "Feature 4",
-            ].map((feature, idx) => (
-              <div
-                key={idx}
-                className="bg-[#292A25] py-2 px-4 rounded-lg max-w-xs text-sm font-medium"
-              >
-                {feature}
-              </div>
-            ))}
+
+                    {templateData?.usecases?.map((uc: string, idx: number) => (
+          <div key={idx} className="bg-[#292A25] py-2 px-4 rounded-lg max-w-xs text-sm font-medium">
+            {uc}
+          </div>
+        ))}
           </div>
         </div>
 
@@ -222,17 +328,22 @@ const CheckoutPage = () => {
                 <div className="flex flex-col gap-2 w-full">
                   <div className="flex justify-between">
                     <p>SubTotal</p>
-                    <p>$50.00</p>
+                    <p>${templateData?.price ?? 0}.00</p>
                   </div>
                   <div className="flex justify-between text-lg font-semibold">
                     <p>Total</p>
-                    <p className="text-[#B9F500]">$50.00</p>
+                    <p className="text-[#B9F500]">${templateData?.price ?? 0}.00</p>
                   </div>
                 </div>
 
-                <button className="w-full bg-[#B9F500] py-[15px] px-[18px] rounded-2xl font-bold text-black">
-                  Pay $50.00
-                </button>
+                <a         href="#"
+        onClick={(e) => {
+          e.preventDefault();
+          handlePayClick();
+        }}
+        className="w-full bg-[#B9F500] py-[15px] px-[18px] rounded-2xl font-bold text-black text-center">
+                  Pay ${templateData?.price ?? 0}.00
+                </a>
               </form>
             </TabsContent>
 
@@ -255,11 +366,15 @@ const CheckoutPage = () => {
                 </div>
                 <div className="flex justify-between text-lg font-semibold">
                   <p>Total</p>
-                  <p className="text-[#B9F500]">$50.00</p>
+                  <p className="text-[#B9F500]">${templateData?.price ?? 0}.00</p>
                 </div>
-                <button className="w-full bg-[#B9F500] py-4 rounded-2xl font-bold text-black">
-                  Pay $50.00
-                </button>
+                <a   href="#"
+        onClick={(e) => {
+          e.preventDefault();
+          handlePayClick();
+        }} className="w-full bg-[#B9F500] py-4 rounded-2xl font-bold text-black text-center">
+                  Pay ${templateData?.price ?? 0}.00
+                </a>
               </form>
             </TabsContent>
           </Tabs>
