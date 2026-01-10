@@ -3,62 +3,52 @@ generator client {
   binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  user_id       Int      @id @default(autoincrement())
-  username      String?  @unique
-  email         String   @unique
-  password_hash String?
-  region        String?
-  role          String?
-  interests     Json?
-  referralCode  String?
-  referred_by   Int?
-  is_verified   Boolean  @default(false)
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
-  refresh_token String?
-  username_last_changed DateTime?
-
-
+  email                   String             @unique
+  created_at              DateTime           @default(now())
+  interests               Json?
+  is_verified             Boolean            @default(false)
+  password_hash           String?
+  referralCode            String?
+  referred_by             Int?
+  region                  String?
+  updated_at              DateTime           @updatedAt
+  user_id                 Int                @id @default(autoincrement())
+  username                String?            @unique
   otp                     String?
   otp_expires             DateTime?
-  reset_password_token    String?
+  refresh_token           String?
   reset_password_expires  DateTime?
-
-  otp_request_count      Int       @default(0)
-  otp_request_date       DateTime? // Saves last request day
-
-  profile       UserProfile?
-  userRoles     UserRole[]       @relation("UserToRoles")
-  assignedRoles UserRole[]       @relation("AssignedByUser")
-
-  templates     Template[]       @relation("TemplatesCreator")
-  purchases     Purchase[]       @relation("BuyerPurchases")
-  reviews       Review[]
-  aiSessions    AiEditSession[]
-  payouts       Payout[]         @relation("AuthorPayout")
-  downloads     Download[]
-  shares        Share[]
-  analytics     AnalyticsEvent[]
-  referralCodes ReferralCode[]
-
-  referredBy User?  @relation("Referral", fields: [referred_by], references: [user_id])
-  referrals  User[] @relation("Referral")
-
-  authoredTeamMembers     AuthorTeamMember[] @relation("AuthorToMembers")
-  memberOfAuthorTeams     AuthorTeamMember[] @relation("MemberOfAuthors")
+  reset_password_token    String?
+  role                    String?
+  otp_request_count       Int                @default(0)
+  otp_request_date        DateTime?
+  username_last_changed   DateTime?
   administeredTeamMembers AdminTeamMember[]  @relation("AdminToMembers")
   memberOfAdminTeams      AdminTeamMember[]  @relation("MemberOfAdmins")
-
-  refunds Refund[] @relation("RefundRequester")
+  aiSessions              AiEditSession[]
+  analytics               AnalyticsEvent[]
+  authoredTeamMembers     AuthorTeamMember[] @relation("AuthorToMembers")
+  memberOfAuthorTeams     AuthorTeamMember[] @relation("MemberOfAuthors")
+  downloads               Download[]
+  payouts                 Payout[]           @relation("AuthorPayout")
+  purchases               Purchase[]         @relation("BuyerPurchases")
+  referralCodes           ReferralCode[]
+  refunds                 Refund[]           @relation("RefundRequester")
+  reviews                 Review[]
+  shares                  Share[]
+  templates               Template[]         @relation("TemplatesCreator")
+  referredBy              User?              @relation("Referral", fields: [referred_by], references: [user_id])
+  referrals               User[]             @relation("Referral")
+  profile                 UserProfile?
+  assignedRoles           UserRole[]         @relation("AssignedByUser")
+  userRoles               UserRole[]         @relation("UserToRoles")
 }
-
 
 model UserProfile {
   profile_id   Int      @id @default(autoincrement())
@@ -70,12 +60,8 @@ model UserProfile {
   social_links Json?
   created_at   DateTime @default(now())
   updated_at   DateTime @updatedAt
-
-  user User @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  user         User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
 }
-
-
-
 
 model Role {
   role_id     Int        @id @default(autoincrement())
@@ -89,10 +75,9 @@ model UserRole {
   role_id     Int
   assigned_by Int?
   assigned_at DateTime @default(now())
-
-  user       User  @relation("UserToRoles", fields: [user_id], references: [user_id]) // ✅ explicit relation name
-  assignedBy User? @relation("AssignedByUser", fields: [assigned_by], references: [user_id])
-  role       Role  @relation(fields: [role_id], references: [role_id])
+  assignedBy  User?    @relation("AssignedByUser", fields: [assigned_by], references: [user_id])
+  role        Role     @relation(fields: [role_id], references: [role_id])
+  user        User     @relation("UserToRoles", fields: [user_id], references: [user_id])
 
   @@id([user_id, role_id])
 }
@@ -106,57 +91,54 @@ model Category {
 }
 
 model Template {
-  template_id     String   @id @default(uuid())
+  template_id     String                  @id @default(uuid())
   creator_id      Int
   title           String
   category_id     Int?
   description     String?
   type            String
   price           Decimal
-  is_featured     Boolean  @default(false)
+  is_featured     Boolean                 @default(false)
   usability_score Float?
   stack           String[]
-  downloads_count Int      @default(0)
-  users_count     Int      @default(0)
+  downloads_count Int                     @default(0)
+  users_count     Int                     @default(0)
   avg_rating      Float?
   example_links   Json?
-  status          String   @default("draft")
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt
-
-  creator         User                    @relation("TemplatesCreator", fields: [creator_id], references: [user_id])
-  category        Category?               @relation(fields: [category_id], references: [category_id])
-  media           TemplateMedia[]
-  usecases        TemplateUsecase[]
-  tags            TemplateTagOnTemplate[]
-  relatedBase     RelatedTemplates[]      @relation("RelatedTemplateBase") // templates this one relates to (as base)
-  relatedRelated  RelatedTemplates[]      @relation("RelatedTemplateRelated") // templates that list this as related
-  purchases       Purchase[]
-  reviews         Review[]
+  status          String                  @default("draft")
+  created_at      DateTime                @default(now())
+  updated_at      DateTime                @updatedAt
   edits           AiEditSession[]
-  logs            TemplateUpdateLog[]
-  downloads       Download[]
-  shares          Share[]
   analyticsEvents AnalyticsEvent[]
+  downloads       Download[]
+  purchases       Purchase[]
+  relatedBase     RelatedTemplates[]      @relation("RelatedTemplateBase")
+  relatedRelated  RelatedTemplates[]      @relation("RelatedTemplateRelated")
+  reviews         Review[]
+  shares          Share[]
+  category        Category?               @relation(fields: [category_id], references: [category_id])
+  creator         User                    @relation("TemplatesCreator", fields: [creator_id], references: [user_id])
+  media           TemplateMedia[]
+  tags            TemplateTagOnTemplate[]
+  logs            TemplateUpdateLog[]
+  usecases        TemplateUsecase[]
 }
 
 model TemplateMedia {
-  media_id    String @id @default(uuid())
+  media_id    String   @id @default(uuid())
   template_id String
   media_type  String
   url         String
   order_index Int?
-
-  template Template @relation(fields: [template_id], references: [template_id])
+  template    Template @relation(fields: [template_id], references: [template_id])
 }
 
 model TemplateUsecase {
-  usecase_id  Int     @id @default(autoincrement())
+  usecase_id  Int      @id @default(autoincrement())
   template_id String
   title       String
   description String?
-
-  template Template @relation(fields: [template_id], references: [template_id])
+  template    Template @relation(fields: [template_id], references: [template_id])
 }
 
 model TemplateTag {
@@ -168,9 +150,8 @@ model TemplateTag {
 model TemplateTagOnTemplate {
   template_id String
   tag_id      Int
-
-  template Template    @relation(fields: [template_id], references: [template_id])
-  tag      TemplateTag @relation(fields: [tag_id], references: [tag_id])
+  tag         TemplateTag @relation(fields: [tag_id], references: [tag_id])
+  template    Template    @relation(fields: [template_id], references: [template_id])
 
   @@id([template_id, tag_id])
 }
@@ -178,9 +159,8 @@ model TemplateTagOnTemplate {
 model RelatedTemplates {
   base_template_id    String
   related_template_id String
-
-  base_template    Template @relation("RelatedTemplateBase", fields: [base_template_id], references: [template_id])
-  related_template Template @relation("RelatedTemplateRelated", fields: [related_template_id], references: [template_id])
+  base_template       Template @relation("RelatedTemplateBase", fields: [base_template_id], references: [template_id])
+  related_template    Template @relation("RelatedTemplateRelated", fields: [related_template_id], references: [template_id])
 
   @@id([base_template_id, related_template_id])
 }
@@ -191,29 +171,27 @@ model TemplateUpdateLog {
   version     String
   changelog   String
   updated_at  DateTime @default(now())
-
-  template Template @relation(fields: [template_id], references: [template_id])
+  template    Template @relation(fields: [template_id], references: [template_id])
 }
 
 model Purchase {
-  purchase_id         String    @id @default(uuid())
+  purchase_id         String     @id @default(uuid())
   buyer_id            Int
   template_id         String
   amount_paid         Decimal
   currency            String
-  purchase_date       DateTime  @default(now())
+  purchase_date       DateTime   @default(now())
   transaction_id      String
   license_signed_url  String?
-  downloaded          Boolean   @default(false)
-  refund_status       String    @default("none")
+  downloaded          Boolean    @default(false)
+  refund_status       String     @default("none")
   refund_requested_at DateTime?
   refunded_at         DateTime?
-
-  buyer     User       @relation("BuyerPurchases", fields: [buyer_id], references: [user_id])
-  template  Template   @relation(fields: [template_id], references: [template_id])
-  payment   Payment?
-  refund    Refund?
-  downloads Download[]
+  downloads           Download[]
+  payment             Payment?
+  buyer               User       @relation("BuyerPurchases", fields: [buyer_id], references: [user_id])
+  template            Template   @relation(fields: [template_id], references: [template_id])
+  refund              Refund?
 }
 
 model Payment {
@@ -224,8 +202,7 @@ model Payment {
   payment_status   String
   gateway_response Json
   created_at       DateTime @default(now())
-
-  purchase Purchase @relation(fields: [purchase_id], references: [purchase_id])
+  purchase         Purchase @relation(fields: [purchase_id], references: [purchase_id])
 }
 
 model Refund {
@@ -237,9 +214,8 @@ model Refund {
   processed_by String?
   processed_at DateTime?
   created_at   DateTime  @default(now())
-
-  purchase  Purchase @relation(fields: [purchase_id], references: [purchase_id])
-  requester User     @relation("RefundRequester", fields: [requested_by], references: [user_id])
+  purchase     Purchase  @relation(fields: [purchase_id], references: [purchase_id])
+  requester    User      @relation("RefundRequester", fields: [requested_by], references: [user_id])
 }
 
 model Review {
@@ -249,9 +225,8 @@ model Review {
   rating      Int
   comment     String?
   created_at  DateTime @default(now())
-
-  user     User     @relation(fields: [user_id], references: [user_id])
-  template Template @relation(fields: [template_id], references: [template_id])
+  template    Template @relation(fields: [template_id], references: [template_id])
+  user        User     @relation(fields: [user_id], references: [user_id])
 }
 
 model AiEditSession {
@@ -265,9 +240,8 @@ model AiEditSession {
   cost_credits    Float?
   created_at      DateTime  @default(now())
   completed_at    DateTime?
-
-  user     User     @relation(fields: [user_id], references: [user_id])
-  template Template @relation(fields: [template_id], references: [template_id])
+  template        Template  @relation(fields: [template_id], references: [template_id])
+  user            User      @relation(fields: [user_id], references: [user_id])
 }
 
 model Payout {
@@ -280,8 +254,7 @@ model Payout {
   gateway_ref   String?
   created_at    DateTime  @default(now())
   completed_at  DateTime?
-
-  creator User @relation("AuthorPayout", fields: [creator_id], references: [user_id])
+  creator       User      @relation("AuthorPayout", fields: [creator_id], references: [user_id])
 }
 
 model Download {
@@ -291,10 +264,9 @@ model Download {
   template_id   String
   downloaded_at DateTime @default(now())
   ip_address    String
-
-  purchase Purchase @relation(fields: [purchase_id], references: [purchase_id])
-  user     User     @relation(fields: [user_id], references: [user_id])
-  template Template @relation(fields: [template_id], references: [template_id])
+  purchase      Purchase @relation(fields: [purchase_id], references: [purchase_id])
+  template      Template @relation(fields: [template_id], references: [template_id])
+  user          User     @relation(fields: [user_id], references: [user_id])
 }
 
 model ReferralCode {
@@ -302,8 +274,7 @@ model ReferralCode {
   user_id    Int
   uses       Int      @default(0)
   created_at DateTime @default(now())
-
-  user User @relation(fields: [user_id], references: [user_id])
+  user       User     @relation(fields: [user_id], references: [user_id])
 }
 
 model AuthorTeamMember {
@@ -311,9 +282,8 @@ model AuthorTeamMember {
   author_user_id Int
   member_user_id Int
   permissions    Json
-
-  author User @relation("AuthorToMembers", fields: [author_user_id], references: [user_id])
-  member User @relation("MemberOfAuthors", fields: [member_user_id], references: [user_id])
+  author         User   @relation("AuthorToMembers", fields: [author_user_id], references: [user_id])
+  member         User   @relation("MemberOfAuthors", fields: [member_user_id], references: [user_id])
 }
 
 model AdminTeamMember {
@@ -321,21 +291,19 @@ model AdminTeamMember {
   admin_user_id  Int
   member_user_id Int
   role           String
-
-  admin  User @relation("AdminToMembers", fields: [admin_user_id], references: [user_id])
-  member User @relation("MemberOfAdmins", fields: [member_user_id], references: [user_id])
+  admin          User   @relation("AdminToMembers", fields: [admin_user_id], references: [user_id])
+  member         User   @relation("MemberOfAdmins", fields: [member_user_id], references: [user_id])
 }
 
 model AnalyticsEvent {
-  event_id    String   @id @default(uuid())
+  event_id    String    @id @default(uuid())
   user_id     Int?
   template_id String?
   event_type  String
   meta        Json?
-  created_at  DateTime @default(now())
-
-  user     User?     @relation(fields: [user_id], references: [user_id])
-  template Template? @relation(fields: [template_id], references: [template_id])
+  created_at  DateTime  @default(now())
+  template    Template? @relation(fields: [template_id], references: [template_id])
+  user        User?     @relation(fields: [user_id], references: [user_id])
 }
 
 model Share {
@@ -344,8 +312,6 @@ model Share {
   template_id String
   channel     String
   created_at  DateTime @default(now())
-
-  user     User     @relation(fields: [user_id], references: [user_id])
-  template Template @relation(fields: [template_id], references: [template_id])
+  template    Template @relation(fields: [template_id], references: [template_id])
+  user        User     @relation(fields: [user_id], references: [user_id])
 }
-
