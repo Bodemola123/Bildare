@@ -61,7 +61,7 @@ const CheckoutPage = () => {
     if (!templateId) return;
 
     const fetchTemplate = async () => {
-      // setLoading(true);
+      setLoading(true);
       try {
         const res = await fetch(`/api/templates/${templateId}`);
         const data = await res.json();
@@ -70,7 +70,7 @@ const CheckoutPage = () => {
       } catch (err) {
         console.error("Failed to fetch template:", err);
       } finally {
-        // setLoading(false);
+        setLoading(false);
       }
     };
 
@@ -120,7 +120,8 @@ const handlePayClick = () => {
   //   }
   // };
 
-    if (loading) {
+  // If data is still loading, show a small internal loading effect (fadeOut still works)
+  if (loading) {
     return (
       <div
         className={`flex flex-col items-center justify-center h-screen w-screen text-white transition-opacity duration-500 ${
