@@ -93,7 +93,7 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({ template }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleOpenModal = () => {
-    trackEvent("template_card_clicked", { template: template.title });
+    trackEvent("template_card_click", { template: template.title });
     setIsModalOpen(true);
   };
 
