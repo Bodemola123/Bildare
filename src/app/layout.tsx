@@ -1,21 +1,16 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/context/AuthContext";
 import Script from "next/script";
 import GoogleAnalyticsTracker from "@/context/GoogleAnalyticsTracker";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+const euclidCircular = localFont({
+  src: "../public/font/EuclidCircularB-Regular.ttf",
+  variable: "--font-euclid",
+  display: "swap",
 });
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
 // Put your GA Measurement ID here
 const GA_MEASUREMENT_ID = "G-Z9N49E2FSH";
 
@@ -88,7 +83,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning={true}>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased text-white bg-[#1c1d19] min-h-screen relative`}
+        className={`${euclidCircular.variable} antialiased text-white bg-[#1c1d19] min-h-screen relative`}
       >
         {/* GA scripts */}
         <Script

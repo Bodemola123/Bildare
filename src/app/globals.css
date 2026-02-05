@@ -137,6 +137,11 @@
   font-display: swap;
 }
 
+html {
+  font-family: var(--font-euclid), system-ui, sans-serif;
+}
+
+
 @font-face {
   font-family: 'Euclid Circular B';
   src: url('/fonts/Euclid Circular B Bold.ttf') format('ttf');
