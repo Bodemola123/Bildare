@@ -7,7 +7,7 @@ import Script from "next/script";
 import GoogleAnalyticsTracker from "@/context/GoogleAnalyticsTracker";
 
 const euclidCircular = localFont({
-  src: "./font/EuclidCircularB-Regular.ttf",
+  src: "./fonts/EuclidCircularB-Regular.ttf",
   variable: "--font-euclid",
   display: "swap",
 });
