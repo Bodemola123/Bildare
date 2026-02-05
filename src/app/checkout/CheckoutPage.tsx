@@ -120,7 +120,8 @@ const handlePayClick = () => {
   //   }
   // };
 
-    if (loading) {
+  // If data is still loading, show a small internal loading effect (fadeOut still works)
+  if (loading) {
     return (
       <div
         className={`flex flex-col items-center justify-center h-screen w-screen text-white transition-opacity duration-500 ${

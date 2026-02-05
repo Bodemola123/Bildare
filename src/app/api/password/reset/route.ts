@@ -13,7 +13,13 @@ export async function POST(req: NextRequest) {
     const user = await prisma.user.findUnique({ where: { email: normalizedEmail } });
     if (!user) return NextResponse.json({ error: "User not found" }, { status: 400 });
 
-    if (!user.reset_password_token || user.reset_password_token !== token || new Date() > user.reset_password_expires) {
+    if (
+  !user.reset_password_token ||
+  !user.reset_password_expires ||
+  user.reset_password_token !== token ||
+  new Date() > user.reset_password_expires
+) {
+
       return NextResponse.json({ error: "Invalid or expired token" }, { status: 400 });
     }
 
