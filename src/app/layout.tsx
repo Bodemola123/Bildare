@@ -83,7 +83,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning={true}>
       <body
-        className={`${euclidCircular.variable} antialiased text-white bg-[#1c1d19] min-h-screen relative`}
+        className={`${euclidCircular.className} antialiased text-white bg-[#1c1d19] min-h-screen relative`}
       >
         {/* GA scripts */}
         <Script
