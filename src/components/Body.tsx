@@ -388,47 +388,40 @@ useEffect(() => {
         </div>
       </div>
 
-<div className="flex flex-col md:flex-row gap-4 justify-center items-center w-full">
+<div className="flex flex-col lg:flex-row gap-4 justify-center items-stretch w-full">
   {/* What's New Card */}
   <div
-    className="flex flex-col md:flex-row items-center justify-between gap-[17px] bg-[#F8FEE6] bg-no-repeat bg-right w-full rounded-2xl p-6  h-auto md:h-[207px]"
+    className="flex flex-col sm:flex-row lg:flex-row items-center justify-between gap-4 bg-[#F8FEE6] bg-no-repeat bg-right w-full lg:w-2/3 rounded-2xl p-5 sm:p-6"
     style={{ backgroundImage: "url('/Vector1.svg')" }}
   >
     {/* Text + Button */}
-    <div className="flex flex-col gap-4 text-center sm:text-left">
-      <div className="flex flex-col gap-[5px]">
-        <h1
-          className="text-[#719500] text-2xl sm:text-3xl md:text-[40px] font-semibold"
-          style={{ lineHeight: "120%", letterSpacing: "-0.08em" }}
-        >
+    <div className="flex flex-col gap-4 text-center sm:text-left max-w-md">
+      <div className="flex flex-col gap-1">
+        <h1 className="text-[#719500] text-xl sm:text-2xl md:text-3xl lg:text-[36px] font-semibold leading-[120%] tracking-[-0.08em]">
           What&apos;s New on Bildare?
         </h1>
-        <p
-          className="text-sm sm:text-base font-normal text-[#000000]"
-          style={{ lineHeight: "145%", letterSpacing: "-0.04em" }}
-        >
+
+        <p className="text-sm sm:text-base text-black leading-[145%] tracking-[-0.04em]">
           Stay ahead of your timeline, Just Build it!
         </p>
       </div>
 
       {isAuthenticated ? (
-      <Link
-        href="/newadditions"
-        className="flex flex-row bg-[#B9F500] px-[18px] py-[11px] gap-2.5 rounded-2xl justify-center sm:justify-start items-center text-[#000000] text-sm font-semibold w-fit self-center sm:self-start"
-        style={{ lineHeight: "145%", letterSpacing: "-0.04em" }}
-      >
-        <Image src="/bstars.svg" alt="stars" width={18} height={18} />
-        See What&apos;s New
-      </Link>
+        <Link
+          href="/newadditions"
+          className="flex items-center gap-2.5 bg-[#B9F500] px-4 py-2.5 rounded-2xl text-sm font-semibold w-fit mx-auto sm:mx-0"
+        >
+          <Image src="/bstars.svg" alt="stars" width={18} height={18} />
+          See What&apos;s New
+        </Link>
       ) : (
-      <button
-        onClick={openModal}
-        className="flex flex-row bg-[#B9F500] px-[18px] py-[11px] gap-2.5 rounded-2xl justify-center sm:justify-start items-center text-[#000000] text-sm font-semibold w-fit self-center sm:self-start cursor-pointer"
-        style={{ lineHeight: "145%", letterSpacing: "-0.04em" }}
-      >
-        <Image src="/bstars.svg" alt="stars" width={18} height={18} />
-        See What&apos;s New
-      </button>
+        <button
+          onClick={openModal}
+          className="flex items-center gap-2.5 bg-[#B9F500] px-4 py-2.5 rounded-2xl text-sm font-semibold w-fit mx-auto sm:mx-0"
+        >
+          <Image src="/bstars.svg" alt="stars" width={18} height={18} />
+          See What&apos;s New
+        </button>
       )}
     </div>
 
@@ -438,7 +431,7 @@ useEffect(() => {
       alt="Cap"
       width={183}
       height={137}
-      className="w-[120px] sm:w-[150px] md:w-[183px] h-auto mt-4 sm:mt-0"
+      className="w-[100px] sm:w-[140px] md:w-[160px] lg:w-[183px] h-auto"
     />
   </div>
 
@@ -448,7 +441,7 @@ useEffect(() => {
     alt="banner"
     width={325}
     height={207}
-    className="w-full md:w-1/3 h-auto md:h-[207px]  rounded-2xl"
+    className="w-full sm:w-full lg:w-1/3 h-auto rounded-2xl object-cover"
   />
 </div>
 
